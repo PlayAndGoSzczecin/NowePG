@@ -231,25 +231,48 @@
         }
 
         function buildPlatformMenu() {
-            const select = document.getElementById('platformFilter');
-            const platforms = [...new Set(allGames.map(g => g.platform))].filter(p => p).sort();
-            select.innerHTML = '<option value="all">Wszystkie Konsole</option>' + platforms.map(p => `<option value="${p}">${p}</option>`).join('');
-        }
+    const select = document.getElementById('platformFilter');
+    // Definiujemy Twoją listę platform, aby zachować konkretną kolejność w menu
+    const myPlatforms = [
+        "PlayStation 1", "PlayStation 2", "PlayStation 3", "PlayStation 4", 
+        "PlayStation 5", "PlayStation Vita", "Switch", "Switch 2", 
+        "Konsole", "Akcesoria"
+    ];
+    
+    // Pobieramy też platformy, które realnie istnieją w Twoim arkuszu (na wypadek literówek)
+    const existingInSheet = [...new Set(allGames.map(g => g.platform))].filter(p => p);
+    
+    // Łączymy obie listy, usuwamy duplikaty i budujemy opcje
+    const finalPlatforms = [...new Set([...myPlatforms, ...existingInSheet])];
 
-        function handleFilter() {
-            const q = document.getElementById('search').value.toLowerCase();
-            const p = document.getElementById('platformFilter').value;
-            const sort = document.getElementById('sortOrder').value;
-            let filtered = allGames.filter(g => g.title.toLowerCase().includes(q) && (p === 'all' || g.platform === p));
-            if(sort === 'price-asc') filtered.sort((a,b) => parseFloat(a.price) - parseFloat(b.price));
-            if(sort === 'title-asc') filtered.sort((a,b) => a.title.localeCompare(b.title));
-            
-            // AKTUALIZACJA LICZNIKA NA PODSTAWIE FILTRÓW
-            document.getElementById('game-count').innerText = filtered.length;
-            
-            renderGames(filtered);
-        }
+    select.innerHTML = '<option value="all">Wszystkie Kategorie</option>' + 
+        finalPlatforms.map(p => `<option value="${p}">${p}</option>`).join('');
+}
 
+function handleFilter() {
+    const q = document.getElementById('search').value.toLowerCase();
+    const p = document.getElementById('platformFilter').value;
+    const sort = document.getElementById('sortOrder').value;
+
+    // Filtrowanie gier
+    let filtered = allGames.filter(g => {
+        const matchesSearch = g.title.toLowerCase().includes(q);
+        const matchesPlatform = (p === 'all' || g.platform === p);
+        return matchesSearch && matchesPlatform;
+    });
+
+    // Sortowanie
+    if(sort === 'price-asc') filtered.sort((a,b) => parseFloat(a.price) - parseFloat(b.price));
+    if(sort === 'title-asc') filtered.sort((a,b) => a.title.localeCompare(b.title));
+    
+    // KLUCZOWY MOMENT: Aktualizacja licznika na podstawie przefiltrowanych wyników
+    const countElement = document.getElementById('game-count');
+    if (countElement) {
+        countElement.innerText = filtered.length;
+    }
+    
+    renderGames(filtered);
+}
         function openModal(title, platform) {
             const n1 = Math.floor(Math.random() * 9) + 1;
             const n2 = Math.floor(Math.random() * 9) + 1;
