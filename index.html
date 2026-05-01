@@ -231,48 +231,41 @@
         }
 
         function buildPlatformMenu() {
-    const select = document.getElementById('platformFilter');
-    // Definiujemy Twoją listę platform, aby zachować konkretną kolejność w menu
-    const myPlatforms = [
-        "PlayStation 1", "PlayStation 2", "PlayStation 3", "PlayStation 4", 
-        "PlayStation 5", "PlayStation Vita", "Nintendo Switch", "Nintendo Switch 2", 
-        "Konsole", "Akcesoria"
-    ];
-    
-    // Pobieramy też platformy, które realnie istnieją w Twoim arkuszu (na wypadek literówek)
-    const existingInSheet = [...new Set(allGames.map(g => g.platform))].filter(p => p);
-    
-    // Łączymy obie listy, usuwamy duplikaty i budujemy opcje
-    const finalPlatforms = [...new Set([...myPlatforms, ...existingInSheet])];
+            const select = document.getElementById('platformFilter');
+            const myPlatforms = [
+                "PlayStation 1", "PlayStation 2", "PlayStation 3", "PlayStation 4", 
+                "PlayStation 5", "PlayStation Vita", "Nintendo Switch", "Nintendo Switch 2", 
+                "Konsole", "Akcesoria"
+            ];
+            const existingInSheet = [...new Set(allGames.map(g => g.platform))].filter(p => p);
+            const finalPlatforms = [...new Set([...myPlatforms, ...existingInSheet])];
 
-    select.innerHTML = '<option value="all">Wszystkie Kategorie</option>' + 
-        finalPlatforms.map(p => `<option value="${p}">${p}</option>`).join('');
-}
+            select.innerHTML = '<option value="all">Wszystkie Kategorie</option>' + 
+                finalPlatforms.map(p => `<option value="${p}">${p}</option>`).join('');
+        }
 
-function handleFilter() {
-    const q = document.getElementById('search').value.toLowerCase();
-    const p = document.getElementById('platformFilter').value;
-    const sort = document.getElementById('sortOrder').value;
+        function handleFilter() {
+            const q = document.getElementById('search').value.toLowerCase();
+            const p = document.getElementById('platformFilter').value;
+            const sort = document.getElementById('sortOrder').value;
 
-    // Filtrowanie gier
-    let filtered = allGames.filter(g => {
-        const matchesSearch = g.title.toLowerCase().includes(q);
-        const matchesPlatform = (p === 'all' || g.platform === p);
-        return matchesSearch && matchesPlatform;
-    });
+            let filtered = allGames.filter(g => {
+                const matchesSearch = g.title.toLowerCase().includes(q);
+                const matchesPlatform = (p === 'all' || g.platform === p);
+                return matchesSearch && matchesPlatform;
+            });
 
-    // Sortowanie
-    if(sort === 'price-asc') filtered.sort((a,b) => parseFloat(a.price) - parseFloat(b.price));
-    if(sort === 'title-asc') filtered.sort((a,b) => a.title.localeCompare(b.title));
-    
-    // KLUCZOWY MOMENT: Aktualizacja licznika na podstawie przefiltrowanych wyników
-    const countElement = document.getElementById('game-count');
-    if (countElement) {
-        countElement.innerText = filtered.length;
-    }
-    
-    renderGames(filtered);
-}
+            if(sort === 'price-asc') filtered.sort((a,b) => parseFloat(a.price) - parseFloat(b.price));
+            if(sort === 'title-asc') filtered.sort((a,b) => a.title.localeCompare(b.title));
+            
+            const countElement = document.getElementById('game-count');
+            if (countElement) {
+                countElement.innerText = filtered.length;
+            }
+            
+            renderGames(filtered);
+        }
+
         function openModal(title, platform) {
             const n1 = Math.floor(Math.random() * 9) + 1;
             const n2 = Math.floor(Math.random() * 9) + 1;
@@ -286,66 +279,69 @@ function handleFilter() {
         }
 
         function closeModal() { document.getElementById('resModal').style.display = 'none'; }
+        
+        // TA FUNKCJA BYŁA BRAKUJĄCA
+        function closeInfoModal() { document.getElementById('infoModal').style.display = 'none'; }
 
-       function openInfoModal(type) {
-    const content = document.getElementById('infoContent');
-    if(type === 'contact') {
-        content.innerHTML = `
-            <h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">Kontakt</h2>
-            <div class="space-y-6">
-                <p class="text-xl text-white"><strong>Adres:</strong><br>ul. Krzywoustego 49, 70-323 Szczecin</p>
-                <p class="text-xl text-white"><strong>Telefon:</strong><br><a href="tel:+48726222228" class="text-cyan-400 hover:underline">+48 726 222 228</a></p>
-                <p class="text-xl text-white"><strong>Email:</strong><br><a href="mailto:sklep@playandgo.pl" class="text-cyan-400 hover:underline">sklep@playandgo.pl</a></p>
-                <p class="text-sm text-zinc-400 italic">Zapraszamy w godzinach otwarcia salonu.</p>
-            </div>`;
-    } else {
-        content.innerHTML = `
-            <h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">Polityka Prywatności</h2>
-            <div class="space-y-6 text-zinc-300 text-sm leading-relaxed pr-4">
-                <section>
-                    <h4 class="font-bold text-white uppercase mb-2">1. Informacje ogólne</h4>
-                    <p>Niniejsza Polityka Prywatności określa zasady przetwarzania i ochrony danych osobowych przekazywanych przez Użytkowników w związku z korzystaniem z serwisu rezerwacji gier Play & Go.</p>
-                </section>
-                
-                <section>
-                    <h4 class="font-bold text-white uppercase mb-2">2. Administrator Danych</h4>
-                    <p>Administratorem danych osobowych jest <strong>P&G Łukasz Sienkiewicz</strong> z siedzibą w Szczecinie (70-323), ul. Sikorskiego 4/13, NIP: 7431874463.</p>
-                </section>
+        function openInfoModal(type) {
+            const content = document.getElementById('infoContent');
+            if(type === 'contact') {
+                content.innerHTML = `
+                    <h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">Kontakt</h2>
+                    <div class="space-y-6">
+                        <p class="text-xl text-white"><strong>Adres:</strong><br>ul. Krzywoustego 49, 70-323 Szczecin</p>
+                        <p class="text-xl text-white"><strong>Telefon:</strong><br><a href="tel:+48726222228" class="text-cyan-400 hover:underline">+48 726 222 228</a></p>
+                        <p class="text-xl text-white"><strong>Email:</strong><br><a href="mailto:sklep@playandgo.pl" class="text-cyan-400 hover:underline">sklep@playandgo.pl</a></p>
+                        <p class="text-sm text-zinc-400 italic">Zapraszamy w godzinach otwarcia salonu.</p>
+                    </div>`;
+            } else {
+                content.innerHTML = `
+                    <h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">Polityka Prywatności</h2>
+                    <div class="space-y-6 text-zinc-300 text-sm leading-relaxed pr-4">
+                        <section>
+                            <h4 class="font-bold text-white uppercase mb-2">1. Informacje ogólne</h4>
+                            <p>Niniejsza Polityka Prywatności określa zasady przetwarzania i ochrony danych osobowych przekazywanych przez Użytkowników w związku z korzystaniem z serwisu rezerwacji gier Play & Go.</p>
+                        </section>
+                        
+                        <section>
+                            <h4 class="font-bold text-white uppercase mb-2">2. Administrator Danych</h4>
+                            <p>Administratorem danych osobowych jest <strong>P&G Łukasz Sienkiewicz</strong> z siedzibą w Szczecinie (70-323), ul. Sikorskiego 4/13, NIP: 7431874463.</p>
+                        </section>
 
-                <section>
-                    <h4 class="font-bold text-white uppercase mb-2">3. Cel zbierania danych</h4>
-                    <p>Dane osobowe (imię, nazwisko, numer telefonu) przetwarzane są wyłącznie w celu:</p>
-                    <ul class="list-disc ml-5 space-y-1">
-                        <li>Realizacji procesu rezerwacji wybranej gry;</li>
-                        <li>Kontaktu telefonicznego w celu potwierdzenia dostępności tytułu;</li>
-                        <li>Weryfikacji tożsamości przy odbiorze osobistym w punkcie.</li>
-                    </ul>
-                </section>
+                        <section>
+                            <h4 class="font-bold text-white uppercase mb-2">3. Cel zbierania danych</h4>
+                            <p>Dane osobowe (imię, nazwisko, numer telefonu) przetwarzane są wyłącznie w celu:</p>
+                            <ul class="list-disc ml-5 space-y-1">
+                                <li>Realizacji procesu rezerwacji wybranej gry;</li>
+                                <li>Kontaktu telefonicznego w celu potwierdzenia dostępności tytułu;</li>
+                                <li>Weryfikacji tożsamości przy odbiorze osobistym w punkcie.</li>
+                            </ul>
+                        </section>
 
-                <section>
-                    <h4 class="font-bold text-white uppercase mb-2">4. Prawa Użytkownika</h4>
-                    <p>Każda osoba, której dane dotyczą, ma prawo do:</p>
-                    <ul class="list-disc ml-5 space-y-1">
-                        <li>Dostępu do swoich danych oraz otrzymania ich kopii;</li>
-                        <li>Sprostowania (poprawiania) swoich danych;</li>
-                        <li>Usunięcia danych („prawo do bycia zapomnianym”);</li>
-                        <li>Wniesienia skargi do organu nadzorczego (Prezesa UODO).</li>
-                    </ul>
-                </section>
+                        <section>
+                            <h4 class="font-bold text-white uppercase mb-2">4. Prawa Użytkownika</h4>
+                            <p>Każda osoba, której dane dotyczą, ma prawo do:</p>
+                            <ul class="list-disc ml-5 space-y-1">
+                                <li>Dostępu do swoich danych oraz otrzymania ich kopii;</li>
+                                <li>Sprostowania (poprawiania) swoich danych;</li>
+                                <li>Usunięcia danych („prawo do bycia zapomnianym”);</li>
+                                <li>Wniesienia skargi do organu nadzorczego (Prezesa UODO).</li>
+                            </ul>
+                        </section>
 
-                <section>
-                    <h4 class="font-bold text-white uppercase mb-2">5. Okres przechowywania</h4>
-                    <p>Dane są przechowywane przez okres niezbędny do realizacji rezerwacji lub do momentu wycofania zgody przez Użytkownika. Po tym czasie są trwale usuwane z systemu.</p>
-                </section>
+                        <section>
+                            <h4 class="font-bold text-white uppercase mb-2">5. Okres przechowywania</h4>
+                            <p>Dane są przechowywane przez okres niezbędny do realizacji rezerwacji lub do momentu wycofania zgody przez Użytkownika. Po tym czasie są trwale usuwane z systemu.</p>
+                        </section>
 
-                <section>
-                    <h4 class="font-bold text-white uppercase mb-2">6. Kontakt</h4>
-                    <p>W sprawach związanych z ochroną danych prosimy o kontakt pod adresem: <strong>sklep@playandgo.pl</strong>.</p>
-                </section>
-            </div>`;
-    }
-    document.getElementById('infoModal').style.display = 'block';
-}
+                        <section>
+                            <h4 class="font-bold text-white uppercase mb-2">6. Kontakt</h4>
+                            <p>W sprawach związanych z ochroną danych prosimy o kontakt pod adresem: <strong>sklep@playandgo.pl</strong>.</p>
+                        </section>
+                    </div>`;
+            }
+            document.getElementById('infoModal').style.display = 'block';
+        }
 
         document.getElementById('resForm').onsubmit = async (e) => {
             e.preventDefault();
