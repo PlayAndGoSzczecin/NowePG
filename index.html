@@ -3,434 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Play & Go Szczecin | Rezerwacje Gier</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <title>Biblioteka Gier Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #00f2ff; --bg: #05050a; }
-        body { 
-            font-family: 'Outfit', sans-serif; 
-            background-color: var(--bg); 
-            color: #fff; 
-            overflow-x: hidden; 
-            scroll-behavior: smooth;
-        }
-        .glass { 
-            backdrop-filter: blur(20px); 
-            background: rgba(0, 0, 0, 0.55); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-        }
-        
-        .main-shroud {
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(15px);
-            border-radius: 4rem;
-            padding: 3rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        :root {
+            --bg: #0a0a0c;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --accent: #3b82f6;
+            --text-main: #ffffff;
+            --text-dim: #a1a1aa;
         }
 
-        .game-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .game-card:hover { transform: translateY(-10px); border-color: var(--accent); box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); }
-        
-        .slider-container { position: relative; border-radius: 2.5rem; height: 450px; background: #000; overflow: hidden; }
-        .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s ease-in-out; }
-        .slide.active { opacity: 1; }
-        .slide img { width: 100%; height: 100%; object-fit: cover; filter: brightness(1); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .custom-input { background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.15); padding: 1rem; border-radius: 1rem; color: #fff; width: 100%; }
-        .custom-input:focus { border-color: var(--accent); outline: none; }
-        
-        .modal { display: none; position: fixed; z-index: 100; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); }
-        .text-gradient { background: linear-gradient(90deg, #fff, #ffcc00, #00f2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: pulse-gradient 8s linear infinite; }
-        @keyframes pulse-gradient { to { background-position: 200% center; } }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
 
-        /* Style stopki z efektem pojawiania się */
-        footer { 
-            opacity: 0; 
-            transform: translateY(30px); 
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
+        /* NAPRAWA TŁA: Używamy dedykowanej warstwy zamiast background-attachment: fixed */
+        .bg-fixed-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transform: translateZ(0); /* Akceleracja sprzętowa */
+            filter: brightness(0.4);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-top: 40px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(to bottom, #fff, #666);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+
+        .game-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .game-img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+        }
+
+        .game-info {
+            padding: 20px;
+        }
+
+        .game-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        /* NAPRAWA STOPKI: Płynne pojawianie się */
+        footer {
+            padding: 60px 0;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            opacity: 0; /* Domyślnie ukryta */
+            transition: opacity 1s ease-out;
             pointer-events: none;
         }
-        footer.visible { 
-            opacity: 1; 
-            transform: translateY(0); 
+
+        footer.visible {
+            opacity: 1;
             pointer-events: auto;
         }
 
-        footer a { transition: color 0.3s ease; }
-        footer h4 { position: relative; }
-        footer h4::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 20px;
-            height: 2px;
-            background: var(--accent);
+        .footer-content h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
 
-    <nav class="sticky top-0 z-50 glass border-b border-white/5 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.reload()">
-                <div class="w-10 h-10 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center">
-                    <span class="text-black font-black text-xl">P</span>
-                </div>
-                <h1 class="text-xl font-black uppercase tracking-tighter">Play<span class="text-cyan-400">&</span>Go</h1>
-            </div>
-            <div class="flex gap-6 text-[10px] uppercase font-black tracking-widest text-zinc-400">
-                <button onclick="openInfoModal('contact')" class="hover:text-white transition">Kontakt</button>
-                <button onclick="openInfoModal('privacy')" class="hover:text-white transition">Polityka</button>
-            </div>
-        </div>
-    </nav>
+    <!-- Warstwa tła -->
+    <div id="bg-layer" class="bg-fixed-layer"></div>
 
-    <div class="max-w-7xl mx-auto px-4 mt-8">
-        <div class="main-shroud space-y-12">
-            <header>
-                <div class="grid lg:grid-cols-12 gap-12 items-center">
-                    <div class="lg:col-span-5 space-y-8">
-                        <h2 class="text-5xl md:text-7xl font-black uppercase italic tracking-tighter leading-[0.85] text-gradient">Graj,<br>wymieniaj,<br>oszczędzaj</h2>
-                        <p class="text-zinc-300 text-lg font-light max-w-sm">Najlepsze tytuły na wyciągnięcie ręki. Wybierz grę i zarezerwuj ją w kilka sekund.</p>
-                        <div class="bg-black/50 p-6 rounded-[2rem] border border-white/10 w-fit">
-                            <span id="game-count" class="text-5xl font-black text-white tracking-tighter">--</span>
-                            <p class="text-[9px] uppercase font-black text-cyan-400 tracking-[0.2em] mt-1">Gier w katalogu</p>
-                        </div>
-                    </div>
-                    <div class="lg:col-span-7">
-                        <div id="main-slider" class="slider-container border border-white/10 shadow-2xl"></div>
-                    </div>
-                </div>
-            </header>
+    <div class="container">
+        <header>
+            <h1 id="site-title">Moja Kolekcja</h1>
+            <p id="site-desc" style="color: var(--text-dim)">Ładowanie biblioteki...</p>
+        </header>
 
-            <section>
-                <h4 class="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 mb-6 text-center">Nasze Promocje & Nowości</h4>
-                <div id="banners-row" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
-            </section>
+        <div class="games-grid" id="games-grid">
+            <!-- Gry zostaną wstrzyknięte tutaj -->
         </div>
-    </div>
 
-    <main class="max-w-7xl mx-auto px-6 py-12">
-        <div class="flex flex-col md:flex-row justify-between items-end gap-8 mb-16">
-            <div>
-                <h3 class="text-4xl font-black uppercase italic tracking-tighter">Biblioteka <span class="text-cyan-400">Gier</span></h3>
-                <p class="text-zinc-500 text-sm mt-2">Znajdź interesujący Cię tytuł i sprawdź cenę</p>
+        <footer id="main-footer">
+            <div class="footer-content">
+                <h2 id="footer-title">Dziękujemy za wizytę</h2>
+                <p id="footer-text" style="color: var(--text-dim)">Kolekcja gier 2024</p>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full md:w-auto">
-                <input id="search" type="text" placeholder="Szukaj gry..." class="custom-input">
-                <select id="platformFilter" class="custom-input cursor-pointer"></select>
-                <select id="sortOrder" class="custom-input cursor-pointer">
-                    <option value="default">Sortowanie</option>
-                    <option value="title-asc">Nazwa A-Z</option>
-                    <option value="price-asc">Cena: najniższa</option>
-                </select>
-            </div>
-        </div>
-        <div id="loading" class="text-center py-20 uppercase font-black text-xs tracking-widest text-zinc-500">Synchronizacja z bazą gier...</div>
-        <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10"></div>
-    </main>
-
-    <footer id="main-footer" class="mt-20 border-t border-white/10 bg-black/40 backdrop-blur-xl pt-16 pb-8">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-                <div class="col-span-1 md:col-span-1">
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="w-8 h-8 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
-                            <span class="text-black font-black text-sm">P</span>
-                        </div>
-                        <span class="text-lg font-black uppercase tracking-tighter">Play<span class="text-cyan-400">&</span>Go</span>
-                    </div>
-                    <p class="text-zinc-500 text-sm leading-relaxed">Twoje centrum gamingu w Szczecinie. Wypożyczalnia gier, konsol i akcesoriów. Graj w najnowsze tytuły bez przepłacania.</p>
-                </div>
-                <div>
-                    <h4 class="text-white font-black uppercase italic text-xs tracking-[0.2em] mb-6">Kontakt</h4>
-                    <ul class="space-y-4 text-zinc-400 text-sm">
-                        <li class="flex items-center gap-3"><span class="text-cyan-500">📍</span> ul. Krzywoustego 49, Szczecin</li>
-                        <li><a href="tel:+48726222228" class="flex items-center gap-3 hover:text-white transition"><span class="text-cyan-500">📞</span> +48 726 222 228</a></li>
-                        <li><a href="mailto:sklep@playandgo.pl" class="flex items-center gap-3 hover:text-white transition"><span class="text-cyan-500">✉️</span> sklep@playandgo.pl</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-white font-black uppercase italic text-xs tracking-[0.2em] mb-6">Godziny otwarcia</h4>
-                    <ul class="space-y-2 text-zinc-400 text-sm">
-                        <li class="flex justify-between"><span>Pon - Pt:</span> <span class="text-white font-semibold">11:00 - 19:00</span></li>
-                        <li class="flex justify-between"><span>Sobota:</span> <span class="text-white font-semibold">11:00 - 16:00</span></li>
-                        <li class="flex justify-between"><span>Niedziela:</span> <span class="text-zinc-600 uppercase text-[10px]">Zamknięte</span></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-white font-black uppercase italic text-xs tracking-[0.2em] mb-6">Social Media</h4>
-                    <div class="flex gap-4">
-                        <a href="https://facebook.com/PlayAndGoSzczecin" target="_blank" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-cyan-500 hover:text-black transition-all">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>
-                        </a>
-                        <a href="https://instagram.com/playandgo_szczecin" target="_blank" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-pink-600 hover:text-white transition-all">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                        </a>
-                        <a href="https://tiktok.com/@playandgo" target="_blank" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-zinc-100 hover:text-black transition-all">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.9-.32-1.98-.23-2.81.33-.85.51-1.44 1.43-1.58 2.41-.14 1.01.23 2.06.94 2.81 1.1 1.13 2.86 1.41 4.23.67 1-.51 1.61-1.57 1.66-2.7.04-3.87.03-7.74.02-11.61z"/></svg>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-zinc-600 text-[10px] uppercase tracking-widest">&copy; 2026 Play & Go Szczecin. All Rights Reserved.</p>
-                <div class="flex gap-6">
-                    <button onclick="openInfoModal('privacy')" class="text-zinc-600 hover:text-zinc-400 text-[10px] uppercase tracking-widest transition">Polityka Prywatności</button>
-                    <button onclick="openInfoModal('contact')" class="text-zinc-600 hover:text-zinc-400 text-[10px] uppercase tracking-widest transition">Regulamin</button>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- MODALE POZOSTAJĄ BEZ ZMIAN W HTML -->
-    <div id="resModal" class="modal">
-        <div class="relative top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-lg glass p-10 rounded-[3rem]">
-            <button onclick="closeModal()" class="absolute right-8 top-8 text-3xl opacity-50 hover:opacity-100">&times;</button>
-            <div id="formContainer">
-                <h2 id="modalTitle" class="text-3xl font-black uppercase italic mb-8 tracking-tighter">Rezerwacja</h2>
-                <form id="resForm" class="space-y-4">
-                    <input type="hidden" id="gameTitle">
-                    <input type="text" id="custName" class="custom-input" placeholder="Imię i Nazwisko" required>
-                    <input type="tel" id="custPhone" class="custom-input" placeholder="Numer telefonu" required>
-                    <div class="bg-black/60 p-6 rounded-2xl border border-white/10 text-center">
-                        <label id="captchaQuestion" class="text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-3 block"></label>
-                        <input type="number" id="humanVerify" class="custom-input text-center text-2xl font-bold" placeholder="?" required>
-                    </div>
-                    <button type="submit" id="submitBtn" class="w-full bg-cyan-500 text-black font-black py-5 rounded-2xl uppercase tracking-tighter text-lg hover:bg-white transition-all transform hover:scale-[1.02]">Potwierdzam Rezerwację</button>
-                </form>
-            </div>
-            <div id="successMessage" class="hidden text-center py-10">
-                <div class="w-20 h-20 bg-cyan-500/20 text-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">✓</div>
-                <h2 class="text-3xl font-black text-white mb-4 uppercase italic">Dziękujemy!</h2>
-                <p class="text-zinc-400 mb-8">Zgłoszenie zostało wysłane. Skontaktujemy się z Tobą telefonicznie.</p>
-                <button onclick="closeModal()" class="uppercase font-black text-cyan-400 tracking-widest text-xs">Zamknij okno</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="infoModal" class="modal">
-        <div class="relative top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-2xl glass p-10 rounded-[3rem] max-h-[85vh] overflow-hidden flex flex-col">
-            <button onclick="closeInfoModal()" class="absolute right-8 top-8 text-3xl opacity-50 hover:opacity-100 z-10">&times;</button>
-            <div id="infoContent" class="text-zinc-300 overflow-y-auto pr-4"></div>
-        </div>
+        </footer>
     </div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbyRxDeqQ_8aaeJQqUc4yPR24nZMJ5_aXYUiSWGxOQg4gw2TCgezD41ebtda8icrnc8s/exec';
-        let allGames = [];
-        let settings = {};
-        let correctCaptchaAnswer = 0;
+        // Symulacja danych z bazy (tutaj podepnij swoje dane)
+        const mockData = {
+            settings: {
+                TytulStrony: "Premium Game Library",
+                OpisStrony: "Ekskluzywny przegląd mojej cyfrowej biblioteki",
+                TloStronyURL: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=2070",
+                StopkaTytul: "To już koniec kolekcji",
+                StopkaTekst: "Aktualizowane raz w tygodniu"
+            },
+            games: Array.from({ length: 24 }, (_, i) => ({
+                TytulGry: `Gra Numer ${i + 1}`,
+                MiniaturkaURL: `https://picsum.photos/seed/${i+40}/400/225`
+            }))
+        };
+
         let footerObserver;
 
-        function b64EncodeUnicode(str) { return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1))); }
-        function b64DecodeUnicode(str) { return decodeURIComponent(Array.prototype.map.call(atob(str), c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')); }
-
-        async function init() {
-            try {
-                const res = await fetch(API_URL);
-                const data = await res.json();
-                allGames = data.games || [];
-                settings = data.settings || {};
-                renderUI();
-                buildPlatformMenu();
-                handleFilter();
-                document.getElementById('loading').style.display = 'none';
-            } catch (e) { console.error("Błąd API:", e); }
-        }
-
-        function renderUI() {
-            if (settings.TloStronyURL) {
-                document.body.style.backgroundImage = `url('${settings.TloStronyURL}')`;
-                document.body.style.backgroundSize = 'cover';
-                document.body.style.backgroundAttachment = 'fixed';
-            }
-
-            const slider = document.getElementById('main-slider');
-            if (slider) {
-                let sliderHTML = '';
-                for(let i=1; i<=3; i++) {
-                    const img = settings[`Slider${i}Img`];
-                    const link = settings[`Slider${i}Link`] || '#';
-                    if(img) sliderHTML += `<a href="${link}" target="_blank" class="slide ${i===1 ? 'active' : ''}"><img src="${img}"></a>`;
-                }
-                slider.innerHTML = sliderHTML;
-                startSlider();
-            }
-
-            const bannersRow = document.getElementById('banners-row');
-            if (bannersRow) {
-                let bannersHTML = '';
-                for(let i=1; i<=3; i++) {
-                    const img = settings[`Banner${i}Img`];
-                    const text = settings[`Banner${i}Text`] || '';
-                    const link = (settings[`Banner${i}Link`] || '').toLowerCase().trim();
-                    const rawPopup = settings[`Banner${i}PopupContent`] || '';
-                    if(img) {
-                        const isPopup = (link === 'popup');
-                        const safeContent = b64EncodeUnicode(rawPopup);
-                        const safeTitle = text.replace(/'/g, "\\'");
-                        const clickAction = isPopup 
-                            ? `onclick="event.preventDefault(); openDynamicPopup('${safeTitle}', '${safeContent}')"` 
-                            : `href="${settings[`Banner${i}Link`] || '#'}" target="_blank"`;
-                        bannersHTML += `
-                            <a ${clickAction} class="glass rounded-[2rem] overflow-hidden h-44 relative group cursor-pointer block">
-                                <img src="${img}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-700">
-                                <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-all">
-                                    <span class="text-white font-black uppercase italic text-xl tracking-tighter drop-shadow-lg text-center px-4">${text}</span>
-                                </div>
-                            </a>`;
-                    }
-                }
-                bannersRow.innerHTML = bannersHTML;
-            }
-        }
-
-        function startSlider() {
-            const slides = document.querySelectorAll('.slide');
-            let current = 0;
-            if(slides.length > 1) {
-                setInterval(() => {
-                    slides[current].classList.remove('active');
-                    current = (current + 1) % slides.length;
-                    slides[current].classList.add('active');
-                }, 5000);
-            }
-        }
-
-        function renderGames(games) {
-            const grid = document.getElementById('games-grid');
-            if (!grid) return;
-            grid.innerHTML = games.map(g => `
-                <div class="game-card glass rounded-[2.5rem] p-3 flex flex-col h-full">
-                    <div class="h-64 bg-zinc-900 rounded-[2rem] overflow-hidden mb-5 relative">
-                        <img src="${g.image}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x600/222/444?text=BRAK+ZDJECIA'">
-                        ${g.description ? `<div class="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-md py-2 text-center border-t border-white/10"><span class="text-[20px] font-black uppercase italic tracking-tighter text-white [text-shadow:-1px_-1px_0_#000,1px_-1px_0_#000,-1px_1px_0_#000,1px_1px_0_#000]">${g.description}</span></div>` : ''}
-                    </div>
-                    <h3 class="font-black text-white text-base uppercase italic leading-tight break-words min-h-[3.5rem] flex items-center justify-center text-center px-2 mb-4">${g.title}</h3>
-                    <div class="mt-auto flex justify-between items-center bg-black/50 rounded-2xl p-4 border border-white/5">
-                        <div class="flex flex-col">
-                            <span class="text-[7px] uppercase font-black text-zinc-500 tracking-widest mb-1">Cena</span>
-                            <span class="font-black text-2xl text-white tracking-tighter">${g.price} <span class="text-xs font-normal text-zinc-400">PLN</span></span>
-                        </div>
-                        <button onclick="openModal('${g.title.replace(/'/g, "\\'")}', '${g.platform}')" class="bg-cyan-500 text-black h-12 w-12 rounded-xl flex items-center justify-center hover:bg-white transition-colors shadow-lg shadow-cyan-500/20">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
-                        </button>
-                    </div>
-                </div>`).join('');
-            
+        function init() {
+            renderUI(mockData);
             setupFooterObserver();
         }
 
-       // Trick ze stopką - Intersection Observer
+        function renderUI(data) {
+            const { settings, games } = data;
+
+            // Ustawienia strony
+            document.getElementById('site-title').textContent = settings.TytulStrony;
+            document.getElementById('site-desc').textContent = settings.OpisStrony;
+            document.getElementById('footer-title').textContent = settings.StopkaTytul;
+            document.getElementById('footer-text').textContent = settings.StopkaTekst;
+
+            // NAPRAWA TŁA: Dynamiczne przypisanie
+            if (settings.TloStronyURL) {
+                document.getElementById('bg-layer').style.backgroundImage = `url('${settings.TloStronyURL}')`;
+            }
+
+            // Renderowanie gier
+            const grid = document.getElementById('games-grid');
+            grid.innerHTML = games.map(game => `
+                <div class="game-card">
+                    <img src="${game.MiniaturkaURL}" class="game-img" alt="${game.TytulGry}" loading="lazy">
+                    <div class="game-info">
+                        <div class="game-title">${game.TytulGry}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // NAPRAWA STOPKI: Obserwujemy samą stopkę
         function setupFooterObserver() {
             const footer = document.getElementById('main-footer');
-            const games = document.querySelectorAll('.game-card');
             
-            if(footerObserver) footerObserver.disconnect();
-            footer.classList.remove('visible');
+            if (footerObserver) footerObserver.disconnect();
 
-            // 16 rzędów po 4 gry = 64 gry. 
-            // Sprawdzamy czy jest co najmniej 64 gier, aby aktywować mechanizm "pojawiania się"
-            const triggerIndex = 63; // Indeks 63 to 64-ta gra
+            const options = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1 // Pokaż, gdy 10% stopki jest widoczne
+            };
 
-            if (games.length > triggerIndex) {
-                footerObserver = new IntersectionObserver((entries) => {
-                    if(entries[0].isIntersecting) {
+            footerObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
                         footer.classList.add('visible');
-                    } else {
-                        // Opcjonalnie: ukryj stopkę, gdy użytkownik wróci na górę
-                        footer.classList.remove('visible');
                     }
-                }, { 
-                    threshold: 0.1,
-                    rootMargin: '0px 0px 200px 0px' // Margines, aby stopka zaczęła się ładować nieco wcześniej
                 });
-                footerObserver.observe(games[triggerIndex]);
-            } else {
-                // Jeśli gier jest mało (mniej niż 16 rzędów), stopka jest zawsze widoczna
-                footer.classList.add('visible');
-            }
+            }, options);
+
+            footerObserver.observe(footer);
         }
 
-        function handleFilter() {
-            const q = document.getElementById('search').value.toLowerCase();
-            const p = document.getElementById('platformFilter').value;
-            const sort = document.getElementById('sortOrder').value;
-            let filtered = allGames.filter(g => (p === 'all' || g.platform === p) && g.title.toLowerCase().includes(q));
-            if(sort === 'price-asc') filtered.sort((a,b) => parseFloat(a.price) - parseFloat(b.price));
-            if(sort === 'title-asc') filtered.sort((a,b) => a.title.localeCompare(b.title));
-            document.getElementById('game-count').innerText = filtered.length;
-            renderGames(filtered);
-        }
-
-        function buildPlatformMenu() {
-            const select = document.getElementById('platformFilter');
-            if (!select) return;
-            const myPlatforms = ["PlayStation 1", "PlayStation 2", "PlayStation 3", "PlayStation 4", "PlayStation 5", "PlayStation Vita", "Nintendo Switch", "Nintendo Switch 2", "Konsole", "Akcesoria"];
-            const finalPlatforms = [...new Set([...myPlatforms, ...[...new Set(allGames.map(g => g.platform))].filter(p => p)])];
-            select.innerHTML = '<option value="all">Wszystkie Kategorie</option>' + finalPlatforms.map(p => `<option value="${p}">${p}</option>`).join('');
-        }
-
-        function openModal(title, platform) {
-            const n1 = Math.floor(Math.random() * 9) + 1;
-            const n2 = Math.floor(Math.random() * 9) + 1;
-            correctCaptchaAnswer = n1 + n2;
-            document.getElementById('captchaQuestion').innerText = `Ile to ${n1} + ${n2}?`;
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('gameTitle').value = `${title} (${platform})`;
-            document.getElementById('resModal').style.display = 'block';
-            document.getElementById('formContainer').style.display = 'block';
-            document.getElementById('successMessage').style.display = 'none';
-        }
-
-        function closeModal() { document.getElementById('resModal').style.display = 'none'; }
-        function closeInfoModal() { document.getElementById('infoModal').style.display = 'none'; }
-
-        function openInfoModal(type) {
-            const content = document.getElementById('infoContent');
-            if(type === 'contact') {
-                content.innerHTML = `
-                    <h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">Kontakt</h2>
-                    <div class="space-y-6">
-                        <p class="text-xl text-white"><strong>Adres:</strong><br>ul. Krzywoustego 49, 70-323 Szczecin</p>
-                        <p class="text-xl text-white"><strong>Telefon:</strong><br><a href="tel:+48726222228" class="text-cyan-400 hover:underline">+48 726 222 228</a></p>
-                        <p class="text-xl text-white"><strong>Email:</strong><br><a href="mailto:sklep@playandgo.pl" class="text-cyan-400 hover:underline">sklep@playandgo.pl</a></p>
-                    </div>`;
-            } else {
-                content.innerHTML = `
-                    <h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">Polityka Prywatności</h2>
-                    <div class="text-zinc-300 text-sm space-y-4 leading-relaxed">
-                        <p><strong>1. Administrator Danych:</strong> Administratorem Twoich danych osobowych jest Play & Go z siedzibą w Szczecinie, ul. Krzywoustego 49.</p>
-                        <p><strong>2. Cel przetwarzania:</strong> Dane podane w formularzu rezerwacji (imię, numer telefonu) są przetwarzane wyłącznie w celu realizacji Twojej rezerwacji oraz kontaktu telefonicznego w sprawach z nią związanych.</p>
-                        <p><strong>3. Podstawa prawna:</strong> Przetwarzanie jest niezbędne do podjęcia działań na żądanie osoby, której dane dotyczą, przed zawarciem umowy (art. 6 ust. 1 lit. b RODO).</p>
-                        <p><strong>4. Okres przechowywania:</strong> Twoje dane są przechowywane przez okres niezbędny do realizacji rezerwacji, a następnie są usuwane, chyba że zdecydujesz się na stałą współpracę.</p>
-                        <p><strong>5. Twoje prawa:</strong> Masz prawo do wglądu w swoje dane, ich poprawiania, żądania usunięcia lub ograniczenia przetwarzania. W tym celu skontaktuj się z nami mailowo.</p>
-                        <p><strong>6. Bezpieczeństwo:</strong> Dbamy o to, aby Twoje dane były bezpieczne i nie były udostępniane podmiotom trzecim w celach marketingowych.</p>
-                    </div>`;
-            }
-            document.getElementById('infoModal').style.display = 'block';
-        }
-
-        document.getElementById('resForm').onsubmit = async (e) => {
-            e.preventDefault();
-            if (parseInt(document.getElementById('humanVerify').value) !== correctCaptchaAnswer) { alert("Błędny wynik!"); return; }
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true; btn.innerHTML = 'Wysyłanie...';
-            const params = new URLSearchParams({ gameId: document.getElementById('gameTitle').value, imie: document.getElementById('custName').value, telefon: document.getElementById('custPhone').value });
-            try {
-                await fetch(API_URL + '?' + params.toString(), { mode: 'no-cors' });
-                document.getElementById('formContainer').style.display = 'none';
-                document.getElementById('successMessage').style.display = 'block';
-            } catch (err) { alert("Błąd połączenia."); btn.disabled = false; btn.innerHTML = "Potwierdzam"; }
-        };
-
-        document.getElementById('search').addEventListener('input', handleFilter);
-        document.getElementById('platformFilter').addEventListener('change', handleFilter);
-        document.getElementById('sortOrder').addEventListener('change', handleFilter);
-        init();
+        // Uruchomienie
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
