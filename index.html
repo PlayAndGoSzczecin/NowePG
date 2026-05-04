@@ -3,173 +3,373 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biblioteka Gier Premium</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>Play & Go Szczecin | Rezerwacje Gier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #0a0a0c;
-            --card-bg: rgba(255, 255, 255, 0.07); /* Nieco wyraźniejsze karty */
-            --accent: #3b82f6;
-            --text-main: #ffffff;
-            --text-dim: #a1a1aa;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
+        :root { --accent: #00f2ff; --bg: #05050a; }
+        
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background-color: var(--bg); 
+            color: #fff; 
+            overflow-x: hidden; 
+            scroll-behavior: smooth;
             min-height: 100vh;
         }
 
-        /* NAPRAWIONE TŁO: Teraz na 100% z tyłu i bez agresywnego filtra */
+        /* FIX TŁA: Osobna warstwa, aby uniknąć błędów renderowania */
         .bg-fixed-layer {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1; /* Gwarancja, że jest pod wszystkim */
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
-            transform: translateZ(0); 
-            opacity: 0.5; /* Subtelne tło, by nie gryzło się z tekstem */
+            background-attachment: fixed;
+            opacity: 0.4;
+            transform: translateZ(0);
         }
 
-        .container {
-            position: relative;
-            z-index: 1; /* Treść zawsze nad tłem */
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 40px 20px;
+        .glass { 
+            backdrop-filter: blur(20px); 
+            background: rgba(0, 0, 0, 0.55); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+        
+        .main-shroud {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(15px);
+            border-radius: 4rem;
+            padding: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 60px;
-            padding-top: 60px;
-        }
+        .game-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .game-card:hover { transform: translateY(-10px); border-color: var(--accent); box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); }
+        
+        .slider-container { position: relative; border-radius: 2.5rem; height: 450px; background: #000; overflow: hidden; }
+        .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s ease-in-out; }
+        .slide.active { opacity: 1; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
+        .custom-input { background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.15); padding: 1rem; border-radius: 1rem; color: #fff; width: 100%; }
+        .custom-input:focus { border-color: var(--accent); outline: none; }
+        
+        .modal { display: none; position: fixed; z-index: 100; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); }
+        .text-gradient { background: linear-gradient(90deg, #fff, #ffcc00, #00f2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: pulse-gradient 8s linear infinite; }
+        
+        @keyframes pulse-gradient { to { background-position: 200% center; } }
 
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-            margin-bottom: 80px;
+        /* Style stopki */
+        footer { 
+            opacity: 0; 
+            transform: translateY(30px); 
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
+            pointer-events: none;
         }
-
-        /* Karty w stylu Glassmorphism */
-        .game-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            overflow: hidden;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .game-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--accent);
-            background: rgba(255, 255, 255, 0.12);
-        }
-
-        .game-img {
-            width: 100%;
-            aspect-ratio: 16/9;
-            object-fit: cover;
-        }
-
-        .game-info {
-            padding: 15px 20px;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-        }
-
-        .game-title {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        footer {
-            padding: 80px 0;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 1.5s ease;
-        }
-
-        footer.visible {
-            opacity: 1;
+        footer.visible { 
+            opacity: 1; 
+            transform: translateY(0); 
+            pointer-events: auto;
         }
     </style>
 </head>
 <body>
 
-    <div id="bg-layer" class="bg-fixed-layer"></div>
+    <div id="dynamic-bg" class="bg-fixed-layer"></div>
 
-    <div class="container">
-        <header>
-            <h1 id="site-title">Premium Gallery</h1>
-            <p id="site-desc" style="color: var(--text-dim)">Ekskluzywny przegląd biblioteki</p>
-        </header>
-
-        <div class="games-grid" id="games-grid">
-            <!-- Tutaj JS wstrzyknie karty -->
+    <nav class="sticky top-0 z-50 glass border-b border-white/5 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.reload()">
+                <div class="w-10 h-10 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center">
+                    <span class="text-black font-black text-xl">P</span>
+                </div>
+                <h1 class="text-xl font-black uppercase tracking-tighter">Play<span class="text-cyan-400">&</span>Go</h1>
+            </div>
+            <div class="flex gap-6 text-[10px] uppercase font-black tracking-widest text-zinc-400">
+                <button onclick="openInfoModal('contact')" class="hover:text-white transition">Kontakt</button>
+                <button onclick="openInfoModal('privacy')" class="hover:text-white transition">Polityka</button>
+            </div>
         </div>
+    </nav>
 
-        <footer id="main-footer">
-            <h2 id="footer-title">Koniec Kolekcji</h2>
-            <p id="footer-text">2024 • Wszelkie prawa zastrzeżone</p>
-        </footer>
+    <div class="max-w-7xl mx-auto px-4 mt-8">
+        <div class="main-shroud space-y-12">
+            <header>
+                <div class="grid lg:grid-cols-12 gap-12 items-center">
+                    <div class="lg:col-span-5 space-y-8">
+                        <h2 class="text-5xl md:text-7xl font-black uppercase italic tracking-tighter leading-[0.85] text-gradient">Graj,<br>wymieniaj,<br>oszczędzaj</h2>
+                        <p class="text-zinc-300 text-lg font-light max-w-sm">Najlepsze tytuły na wyciągnięcie ręki. Wybierz grę i zarezerwuj ją w kilka sekund.</p>
+                        <div class="bg-black/50 p-6 rounded-[2rem] border border-white/10 w-fit">
+                            <span id="game-count" class="text-5xl font-black text-white tracking-tighter">--</span>
+                            <p class="text-[9px] uppercase font-black text-cyan-400 tracking-[0.2em] mt-1">Gier w katalogu</p>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-7">
+                        <div id="main-slider" class="slider-container border border-white/10 shadow-2xl"></div>
+                    </div>
+                </div>
+            </header>
+
+            <section>
+                <h4 class="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 mb-6 text-center">Nasze Promocje & Nowości</h4>
+                <div id="banners-row" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+            </section>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <div class="flex flex-col md:flex-row justify-between items-end gap-8 mb-16">
+            <div>
+                <h3 class="text-4xl font-black uppercase italic tracking-tighter">Biblioteka <span class="text-cyan-400">Gier</span></h3>
+                <p class="text-zinc-500 text-sm mt-2">Znajdź interesujący Cię tytuł i sprawdź cenę</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full md:w-auto">
+                <input id="search" type="text" placeholder="Szukaj gry..." class="custom-input">
+                <select id="platformFilter" class="custom-input cursor-pointer"></select>
+                <select id="sortOrder" class="custom-input cursor-pointer">
+                    <option value="default">Sortowanie</option>
+                    <option value="title-asc">Nazwa A-Z</option>
+                    <option value="price-asc">Cena: najniższa</option>
+                </select>
+            </div>
+        </div>
+        <div id="loading" class="text-center py-20 uppercase font-black text-xs tracking-widest text-zinc-500">Synchronizacja z bazą gier...</div>
+        <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10"></div>
+    </main>
+
+    <footer id="main-footer" class="mt-20 border-t border-white/10 bg-black/40 backdrop-blur-xl pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-8 h-8 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-black font-black text-sm">P</span>
+                        </div>
+                        <span class="text-lg font-black uppercase tracking-tighter">Play<span class="text-cyan-400">&</span>Go</span>
+                    </div>
+                    <p class="text-zinc-500 text-sm leading-relaxed">Twoje centrum gamingu w Szczecinie. Wypożyczalnia gier, konsol i akcesoriów.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-black uppercase italic text-xs tracking-[0.2em] mb-6">Kontakt</h4>
+                    <ul class="space-y-4 text-zinc-400 text-sm">
+                        <li>📍 ul. Krzywoustego 49, Szczecin</li>
+                        <li><a href="tel:+48726222228" class="hover:text-white">📞 +48 726 222 228</a></li>
+                        <li><a href="mailto:sklep@playandgo.pl" class="hover:text-white">✉️ sklep@playandgo.pl</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-black uppercase italic text-xs tracking-[0.2em] mb-6">Godziny</h4>
+                    <ul class="space-y-2 text-zinc-400 text-sm">
+                        <li class="flex justify-between"><span>Pn - Pt:</span> <span class="text-white">11:00 - 19:00</span></li>
+                        <li class="flex justify-between"><span>Sobota:</span> <span class="text-white">11:00 - 16:00</span></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-black uppercase italic text-xs tracking-[0.2em] mb-6">Social</h4>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-cyan-500 transition-all">FB</a>
+                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-pink-600 transition-all">IG</a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white/5 pt-8 text-center">
+                <p class="text-zinc-600 text-[10px] uppercase tracking-widest">&copy; 2026 Play & Go Szczecin.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODALE -->
+    <div id="resModal" class="modal">
+        <div class="relative top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-lg glass p-10 rounded-[3rem]">
+            <button onclick="closeModal()" class="absolute right-8 top-8 text-3xl opacity-50 hover:opacity-100">&times;</button>
+            <div id="formContainer">
+                <h2 id="modalTitle" class="text-3xl font-black uppercase italic mb-8 tracking-tighter">Rezerwacja</h2>
+                <form id="resForm" class="space-y-4">
+                    <input type="hidden" id="gameTitle">
+                    <input type="text" id="custName" class="custom-input" placeholder="Imię i Nazwisko" required>
+                    <input type="tel" id="custPhone" class="custom-input" placeholder="Numer telefonu" required>
+                    <div class="bg-black/60 p-6 rounded-2xl border border-white/10 text-center">
+                        <label id="captchaQuestion" class="text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-3 block"></label>
+                        <input type="number" id="humanVerify" class="custom-input text-center text-2xl font-bold" placeholder="?" required>
+                    </div>
+                    <button type="submit" id="submitBtn" class="w-full bg-cyan-500 text-black font-black py-5 rounded-2xl uppercase tracking-tighter text-lg hover:bg-white transition-all transform hover:scale-[1.02]">Potwierdzam</button>
+                </form>
+            </div>
+            <div id="successMessage" class="hidden text-center py-10">
+                <div class="w-20 h-20 bg-cyan-500/20 text-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">✓</div>
+                <h2 class="text-3xl font-black text-white mb-4 uppercase italic">Dziękujemy!</h2>
+                <button onclick="closeModal()" class="uppercase font-black text-cyan-400 tracking-widest text-xs">Zamknij</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Twoje dane (zmień URL tła na właściwy!)
-        const data = {
-            settings: {
-                TytulStrony: "Moja Kolekcja Gier",
-                OpisStrony: "Zbiór najlepszych tytułów",
-                TloStronyURL: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070", 
-                StopkaTytul: "Dziękuję za oglądanie",
-                StopkaTekst: "Kolekcja aktualizowana na bieżąco"
-            },
-            games: Array.from({ length: 12 }, (_, i) => ({
-                TytulGry: `Super Gra ${i + 1}`,
-                MiniaturkaURL: `https://picsum.photos/seed/${i+10}/600/338`
-            }))
-        };
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyRxDeqQ_8aaeJQqUc4yPR24nZMJ5_aXYUiSWGxOQg4gw2TCgezD41ebtda8icrnc8s/exec';
+        let allGames = [];
+        let settings = {};
+        let correctCaptchaAnswer = 0;
+        let footerObserver;
 
-        function render() {
-            document.getElementById('site-title').textContent = data.settings.TytulStrony;
-            document.getElementById('site-desc').textContent = data.settings.OpisStrony;
-            document.getElementById('bg-layer').style.backgroundImage = `url('${data.settings.TloStronyURL}')`;
-            
-            const grid = document.getElementById('games-grid');
-            grid.innerHTML = data.games.map(g => `
-                <div class="game-card">
-                    <img src="${g.MiniaturkaURL}" class="game-img" alt="">
-                    <div class="game-info">
-                        <div class="game-title">${g.TytulGry}</div>
-                    </div>
-                </div>
-            `).join('');
-
-            // Prosty mechanizm pokazania stopki przy scrollu
-            const observer = new IntersectionObserver((entries) => {
-                if(entries[0].isIntersecting) document.getElementById('main-footer').classList.add('visible');
-            }, { threshold: 0.1 });
-            observer.observe(document.getElementById('main-footer'));
+        async function init() {
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                allGames = data.games || [];
+                settings = data.settings || {};
+                renderUI();
+                buildPlatformMenu();
+                handleFilter();
+                document.getElementById('loading').style.display = 'none';
+            } catch (e) { console.error("Błąd API:", e); }
         }
 
-        render();
+        function renderUI() {
+            if (settings.TloStronyURL) {
+                document.getElementById('dynamic-bg').style.backgroundImage = `url('${settings.TloStronyURL}')`;
+            }
+
+            const slider = document.getElementById('main-slider');
+            if (slider) {
+                let sliderHTML = '';
+                for(let i=1; i<=3; i++) {
+                    const img = settings[`Slider${i}Img`];
+                    if(img) sliderHTML += `<div class="slide ${i===1 ? 'active' : ''}"><img src="${img}"></div>`;
+                }
+                slider.innerHTML = sliderHTML;
+                startSlider();
+            }
+
+            const bannersRow = document.getElementById('banners-row');
+            if (bannersRow) {
+                let bannersHTML = '';
+                for(let i=1; i<=3; i++) {
+                    const img = settings[`Banner${i}Img`];
+                    const text = settings[`Banner${i}Text`] || '';
+                    if(img) {
+                        bannersHTML += `
+                            <div class="glass rounded-[2rem] overflow-hidden h-44 relative group cursor-pointer block">
+                                <img src="${img}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition duration-700">
+                                <div class="absolute inset-0 flex items-center justify-center bg-black/30">
+                                    <span class="text-white font-black uppercase italic text-xl tracking-tighter text-center px-4">${text}</span>
+                                </div>
+                            </div>`;
+                    }
+                }
+                bannersRow.innerHTML = bannersHTML;
+            }
+        }
+
+        function startSlider() {
+            const slides = document.querySelectorAll('.slide');
+            let current = 0;
+            if(slides.length > 1) {
+                setInterval(() => {
+                    slides[current].classList.remove('active');
+                    current = (current + 1) % slides.length;
+                    slides[current].classList.add('active');
+                }, 5000);
+            }
+        }
+
+        function renderGames(games) {
+            const grid = document.getElementById('games-grid');
+            if (!grid) return;
+            grid.innerHTML = games.map(g => `
+                <div class="game-card glass rounded-[2.5rem] p-3 flex flex-col h-full">
+                    <div class="h-64 bg-zinc-900 rounded-[2rem] overflow-hidden mb-5 relative">
+                        <img src="${g.image}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x600/222/444?text=BRAK+ZDJECIA'">
+                        ${g.description ? `<div class="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-md py-2 text-center border-t border-white/10"><span class="text-[14px] font-black uppercase italic text-white">${g.description}</span></div>` : ''}
+                    </div>
+                    <h3 class="font-black text-white text-base uppercase italic text-center px-2 mb-4 min-h-[3rem] flex items-center justify-center">${g.title}</h3>
+                    <div class="mt-auto flex justify-between items-center bg-black/50 rounded-2xl p-4 border border-white/5">
+                        <div class="flex flex-col">
+                            <span class="text-[7px] uppercase font-black text-zinc-500 tracking-widest">Cena</span>
+                            <span class="font-black text-xl text-white">${g.price} PLN</span>
+                        </div>
+                        <button onclick="openModal('${g.title.replace(/'/g, "\\'")}', '${g.platform}')" class="bg-cyan-500 text-black h-10 w-10 rounded-xl flex items-center justify-center hover:bg-white transition-colors">
+                            +
+                        </button>
+                    </div>
+                </div>`).join('');
+            
+            setupFooterObserver();
+        }
+
+        function setupFooterObserver() {
+            const footer = document.getElementById('main-footer');
+            const gameCards = document.querySelectorAll('.game-card');
+            
+            if(footerObserver) footerObserver.disconnect();
+            footer.classList.remove('visible');
+
+            if (gameCards.length >= 32) {
+                footerObserver = new IntersectionObserver((entries) => {
+                    if(entries[0].isIntersecting) footer.classList.add('visible');
+                }, { threshold: 0.1 });
+                // Obserwujemy 32. element (indeks 31), aby wyzwolić stopkę "pod" listą
+                footerObserver.observe(gameCards[31]);
+            } else {
+                // Jeśli gier jest mało, stopka po prostu się pojawia
+                footer.classList.add('visible');
+            }
+        }
+
+        function handleFilter() {
+            const q = document.getElementById('search').value.toLowerCase();
+            const p = document.getElementById('platformFilter').value;
+            const sort = document.getElementById('sortOrder').value;
+            let filtered = allGames.filter(g => (p === 'all' || g.platform === p) && g.title.toLowerCase().includes(q));
+            
+            if(sort === 'price-asc') filtered.sort((a,b) => parseFloat(a.price) - parseFloat(b.price));
+            if(sort === 'title-asc') filtered.sort((a,b) => a.title.localeCompare(b.title));
+            
+            document.getElementById('game-count').innerText = filtered.length;
+            renderGames(filtered);
+        }
+
+        function buildPlatformMenu() {
+            const select = document.getElementById('platformFilter');
+            const myPlatforms = ["PlayStation 5", "PlayStation 4", "Nintendo Switch", "Akcesoria"];
+            const finalPlatforms = [...new Set([...myPlatforms, ...allGames.map(g => g.platform).filter(p => p)])];
+            select.innerHTML = '<option value="all">Wszystkie</option>' + finalPlatforms.map(p => `<option value="${p}">${p}</option>`).join('');
+        }
+
+        function openModal(title, platform) {
+            const n1 = Math.floor(Math.random() * 9) + 1;
+            const n2 = Math.floor(Math.random() * 9) + 1;
+            correctCaptchaAnswer = n1 + n2;
+            document.getElementById('captchaQuestion').innerText = `Ile to ${n1} + ${n2}?`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('gameTitle').value = `${title} (${platform})`;
+            document.getElementById('resModal').style.display = 'block';
+            document.getElementById('formContainer').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function closeModal() { document.getElementById('resModal').style.display = 'none'; }
+
+        document.getElementById('resForm').onsubmit = async (e) => {
+            e.preventDefault();
+            if (parseInt(document.getElementById('humanVerify').value) !== correctCaptchaAnswer) { alert("Błąd!"); return; }
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true; btn.innerHTML = '...';
+            const params = new URLSearchParams({ 
+                gameId: document.getElementById('gameTitle').value, 
+                imie: document.getElementById('custName').value, 
+                telefon: document.getElementById('custPhone').value 
+            });
+            try {
+                await fetch(API_URL + '?' + params.toString(), { mode: 'no-cors' });
+                document.getElementById('formContainer').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+            } catch (err) { alert("Błąd."); btn.disabled = false; }
+        };
+
+        document.getElementById('search').addEventListener('input', handleFilter);
+        document.getElementById('platformFilter').addEventListener('change', handleFilter);
+        document.getElementById('sortOrder').addEventListener('change', handleFilter);
+        init();
     </script>
 </body>
 </html>
