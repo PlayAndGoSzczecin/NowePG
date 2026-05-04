@@ -365,6 +365,15 @@
         document.getElementById('platformFilter').addEventListener('change', handleFilter);
         document.getElementById('sortOrder').addEventListener('change', handleFilter);
         init();
+        function openDynamicPopup(title, htmlContent) {
+            const content = document.getElementById('infoContent');
+            content.innerHTML = `
+                <h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">${title}</h2>
+                <div class="space-y-6 text-zinc-300 text-sm leading-relaxed pr-4">
+                    ${htmlContent || 'Brak zdefiniowanej treści w arkuszu.'}
+                </div>`;
+            document.getElementById('infoModal').style.display = 'block';
+        }
     </script>
 </body>
 </html>
