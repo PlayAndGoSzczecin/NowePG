@@ -159,26 +159,7 @@
         }
 
         function renderUI() {
-            const bgUrl = settings['TloStronyURL'];
-            if (bgUrl) {
-                document.body.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('${bgUrl}')`;
-                document.body.style.backgroundSize = 'cover';
-                document.body.style.backgroundAttachment = 'fixed';
-                document.body.style.backgroundPosition = 'center';
-            }
-
-            const slider = document.getElementById('main-slider');
-            let sliderHTML = '';
-            for(let i=1; i<=3; i++) {
-                const img = settings[`Slider${i}Img`];
-                const link = settings[`Slider${i}Link`] || '#';
-                if(img) sliderHTML += `
-                    <a href="${link}" target="_blank" class="slide ${i===1?'active':''}">
-                        <img src="${img}">
-                    </a>`;
-            }
-            slider.innerHTML = sliderHTML;
-            if(sliderHTML) startSlider();
+            // ... (kod tła i slidera bez zmian) ...
 
             const bannersRow = document.getElementById('banners-row');
             let bannersHTML = '';
@@ -186,17 +167,26 @@
                 const img = settings[`Banner${i}Img`];
                 const text = settings[`Banner${i}Text`] || '';
                 const link = settings[`Banner${i}Link`] || '#';
-                if(img) bannersHTML += `
-                    <a href="${link}" target="_blank" class="glass rounded-[2rem] overflow-hidden h-44 relative group">
-                        <img src="${img}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-700">
-                        <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-all">
-                            <span class="text-white font-black uppercase italic text-xl tracking-tighter drop-shadow-lg text-center px-4">${text}</span>
-                        </div>
-                    </a>`;
+                const popupContent = settings[`Banner${i}PopupContent` Sun]; // Pobieramy treść z arkusza
+
+                if(img) {
+                    // Jeśli w linku wpiszesz "popup", otworzy się okno z treścią z arkusza
+                    const isPopup = link.toLowerCase() === 'popup';
+                    const clickAction = isPopup 
+                        ? `onclick="event.preventDefault(); openDynamicPopup('${text}', '${popupContent.replace(/'/g, "\\'")}')"` 
+                        : `href="${link}" target="_blank"`;
+
+                    bannersHTML += `
+                        <a ${clickAction} class="glass rounded-[2rem] overflow-hidden h-44 relative group cursor-pointer">
+                            <img src="${img}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-700">
+                            <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-all">
+                                <span class="text-white font-black uppercase italic text-xl tracking-tighter drop-shadow-lg text-center px-4">${text}</span>
+                            </div>
+                        </a>`;
+                }
             }
             bannersRow.innerHTML = bannersHTML;
         }
-
         function startSlider() {
             const slides = document.querySelectorAll('.slide');
             let current = 0;
