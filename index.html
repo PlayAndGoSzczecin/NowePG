@@ -324,7 +324,7 @@
             setupFooterObserver();
         }
 
-        // Trick ze stopką - Intersection Observer
+       // Trick ze stopką - Intersection Observer
         function setupFooterObserver() {
             const footer = document.getElementById('main-footer');
             const games = document.querySelectorAll('.game-card');
@@ -332,12 +332,25 @@
             if(footerObserver) footerObserver.disconnect();
             footer.classList.remove('visible');
 
-            if (games.length >= 32) {
+            // 16 rzędów po 4 gry = 64 gry. 
+            // Sprawdzamy czy jest co najmniej 64 gier, aby aktywować mechanizm "pojawiania się"
+            const triggerIndex = 63; // Indeks 63 to 64-ta gra
+
+            if (games.length > triggerIndex) {
                 footerObserver = new IntersectionObserver((entries) => {
-                    if(entries[0].isIntersecting) footer.classList.add('visible');
-                }, { threshold: 0.1 });
-                footerObserver.observe(games[31]); // Obserwuj 32-gą grę (indeks 31)
+                    if(entries[0].isIntersecting) {
+                        footer.classList.add('visible');
+                    } else {
+                        // Opcjonalnie: ukryj stopkę, gdy użytkownik wróci na górę
+                        footer.classList.remove('visible');
+                    }
+                }, { 
+                    threshold: 0.1,
+                    rootMargin: '0px 0px 200px 0px' // Margines, aby stopka zaczęła się ładować nieco wcześniej
+                });
+                footerObserver.observe(games[triggerIndex]);
             } else {
+                // Jeśli gier jest mało (mniej niż 16 rzędów), stopka jest zawsze widoczna
                 footer.classList.add('visible');
             }
         }
