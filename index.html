@@ -133,9 +133,9 @@
     </div>
 
     <div id="infoModal" class="modal">
-        <div class="relative top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-2xl glass p-10 rounded-[3rem] max-h-[85vh] overflow-y-auto">
-            <button onclick="closeInfoModal()" class="absolute right-8 top-8 text-3xl opacity-50 hover:opacity-100">&times;</button>
-            <div id="infoContent" class="text-zinc-300"></div>
+        <div class="relative top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-2xl glass p-10 rounded-[3rem] max-h-[85vh] overflow-hidden flex flex-col">
+            <button onclick="closeInfoModal()" class="absolute right-8 top-8 text-3xl opacity-50 hover:opacity-100 z-10">&times;</button>
+            <div id="infoContent" class="text-zinc-300 overflow-y-auto pr-4"></div>
         </div>
     </div>
 
@@ -144,6 +144,20 @@
         let allGames = [];
         let settings = {};
         let correctCaptchaAnswer = 0;
+
+        // Bezpieczne kodowanie polskich znaków do formatu bezpiecznego dla JS (Base64)
+        function b64EncodeUnicode(str) {
+            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+                return String.fromCharCode('0x' + p1);
+            }));
+        }
+
+        // Dekodowanie z powrotem na polskie znaki
+        function b64DecodeUnicode(str) {
+            return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+        }
 
         async function init() {
             try {
@@ -161,14 +175,12 @@
         }
 
         function renderUI() {
-            // 1. Tło strony
             if (settings.TloStronyURL) {
                 document.body.style.backgroundImage = `url('${settings.TloStronyURL}')`;
                 document.body.style.backgroundSize = 'cover';
                 document.body.style.backgroundAttachment = 'fixed';
             }
 
-            // 2. Slider
             const slider = document.getElementById('main-slider');
             if (slider) {
                 let sliderHTML = '';
@@ -176,17 +188,13 @@
                     const img = settings[`Slider${i}Img`];
                     const link = settings[`Slider${i}Link`] || '#';
                     if(img) {
-                        sliderHTML += `
-                            <a href="${link}" target="_blank" class="slide ${i===1 ? 'active' : ''}">
-                                <img src="${img}">
-                            </a>`;
+                        sliderHTML += `<a href="${link}" target="_blank" class="slide ${i===1 ? 'active' : ''}"><img src="${img}"></a>`;
                     }
                 }
                 slider.innerHTML = sliderHTML;
                 startSlider();
             }
 
-            // 3. Renderowanie 3 Banerów z obsługą Popupów
             const bannersRow = document.getElementById('banners-row');
             if (bannersRow) {
                 let bannersHTML = '';
@@ -198,11 +206,12 @@
 
                     if(img) {
                         const isPopup = (link === 'popup');
-                        // PAKUJEMY TEKST BEZPIECZNIE:
-                        const safePopup = encodeURIComponent(rawPopup);
+                        // Kodujemy całą treść, aby nie psuła atrybutu onclick
+                        const safeContent = b64EncodeUnicode(rawPopup);
+                        const safeTitle = text.replace(/'/g, "\\'");
                         
                         const clickAction = isPopup 
-                            ? `onclick="event.preventDefault(); openDynamicPopup('${text.replace(/'/g, "\\'")}', '${safePopup}')"` 
+                            ? `onclick="event.preventDefault(); openDynamicPopup('${safeTitle}', '${safeContent}')"` 
                             : `href="${settings[`Banner${i}Link`] || '#'}" target="_blank"`;
 
                         bannersHTML += `
@@ -216,7 +225,7 @@
                 }
                 bannersRow.innerHTML = bannersHTML;
             }
-        } // <--- Tutaj brakowało tej klamry w Twoim kodzie!
+        }
 
         function startSlider() {
             const slides = document.querySelectorAll('.slide');
@@ -230,6 +239,19 @@
             }
         }
 
+        function openDynamicPopup(title, encodedContent) {
+            const content = document.getElementById('infoContent');
+            const rawText = b64DecodeUnicode(encodedContent);
+            const formatted = rawText.replace(/\n/g, '<br>');
+
+            content.innerHTML = `
+                <h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">${title}</h2>
+                <div class="space-y-4 text-zinc-300 text-base leading-relaxed font-light">
+                    ${formatted || 'Brak treści.'}
+                </div>`;
+            document.getElementById('infoModal').style.display = 'block';
+        }
+
         function renderGames(games) {
             const grid = document.getElementById('games-grid');
             if (!grid) return;
@@ -237,17 +259,9 @@
                 <div class="game-card glass rounded-[2.5rem] p-3 flex flex-col h-full">
                     <div class="h-64 bg-zinc-900 rounded-[2rem] overflow-hidden mb-5 relative">
                         <img src="${g.image}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x600/222/444?text=BRAK+ZDJECIA'">
-                        ${g.description ? `
-                            <div class="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-md py-2 text-center border-t border-white/10">
-                                <span class="text-[20px] font-black uppercase italic tracking-tighter text-white [text-shadow:-1px_-1px_0_#000,1px_-1px_0_#000,-1px_1px_0_#000,1px_1px_0_#000]">
-                                    ${g.description}
-                                </span>
-                            </div>
-                        ` : ''}
+                        ${g.description ? `<div class="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-md py-2 text-center border-t border-white/10"><span class="text-[20px] font-black uppercase italic tracking-tighter text-white [text-shadow:-1px_-1px_0_#000,1px_-1px_0_#000,-1px_1px_0_#000,1px_1px_0_#000]">${g.description}</span></div>` : ''}
                     </div>
-                    <h3 class="font-black text-white text-base uppercase italic leading-tight break-words min-h-[3.5rem] flex items-center justify-center text-center px-2 mb-4">
-                        ${g.title}
-                    </h3>
+                    <h3 class="font-black text-white text-base uppercase italic leading-tight break-words min-h-[3.5rem] flex items-center justify-center text-center px-2 mb-4">${g.title}</h3>
                     <div class="mt-auto flex justify-between items-center bg-black/50 rounded-2xl p-4 border border-white/5">
                         <div class="flex flex-col">
                             <span class="text-[7px] uppercase font-black text-zinc-500 tracking-widest mb-1">Cena / doba</span>
@@ -275,8 +289,7 @@
             const sort = document.getElementById('sortOrder').value;
             let filtered = allGames.filter(g => {
                 const matchesSearch = g.title.toLowerCase().includes(q);
-                const matchesPlatform = (p === 'all' || g.platform === p);
-                return matchesSearch && matchesPlatform;
+                return (p === 'all' || g.platform === p) && matchesSearch;
             });
             if(sort === 'price-asc') filtered.sort((a,b) => parseFloat(a.price) - parseFloat(b.price));
             if(sort === 'title-asc') filtered.sort((a,b) => a.title.localeCompare(b.title));
@@ -300,25 +313,7 @@
         function closeModal() { document.getElementById('resModal').style.display = 'none'; }
         function closeInfoModal() { document.getElementById('infoModal').style.display = 'none'; }
 
-        function openDynamicPopup(title, encodedContent) {
-            const content = document.getElementById('infoContent');
-            
-            // ROZPAKOWUJEMY TEKST:
-            const htmlContent = decodeURIComponent(encodedContent);
-            
-            // Zamieniamy entery na formatowanie HTML
-            const formattedContent = htmlContent.replace(/\n/g, '<br>');
-
-            content.innerHTML = `
-                <h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">${title}</h2>
-                <div class="space-y-6 text-zinc-300 text-sm leading-relaxed pr-4 font-light">
-                    ${formattedContent || 'Brak zdefiniowanej treści w arkuszu.'}
-                </div>`;
-            document.getElementById('infoModal').style.display = 'block';
-        }
-
         function openInfoModal(type) {
-            if (type !== 'contact' && type !== 'privacy') return;
             const content = document.getElementById('infoContent');
             if(type === 'contact') {
                 content.innerHTML = `<h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">Kontakt</h2><div class="space-y-6"><p class="text-xl text-white"><strong>Adres:</strong><br>ul. Krzywoustego 49, 70-323 Szczecin</p><p class="text-xl text-white"><strong>Telefon:</strong><br><a href="tel:+48726222228" class="text-cyan-400 hover:underline">+48 726 222 228</a></p><p class="text-xl text-white"><strong>Email:</strong><br><a href="mailto:sklep@playandgo.pl" class="text-cyan-400 hover:underline">sklep@playandgo.pl</a></p></div>`;
@@ -342,7 +337,7 @@
                 await fetch(API_URL + '?' + params.toString(), { mode: 'no-cors' });
                 document.getElementById('formContainer').style.display = 'none';
                 document.getElementById('successMessage').style.display = 'block';
-            } catch (err) { alert("Wystąpił błąd. Spróbuj ponownie."); btn.disabled = false; btn.innerHTML = "Potwierdzam Rezerwację"; }
+            } catch (err) { alert("Błąd połączenia."); btn.disabled = false; btn.innerHTML = "Potwierdzam"; }
         };
 
         document.getElementById('search').addEventListener('input', handleFilter);
