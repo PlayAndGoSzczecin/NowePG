@@ -186,29 +186,28 @@
             const bannersRow = document.getElementById('banners-row');
             let bannersHTML = '';
             for(let i=1; i<=3; i++) {
-                const img = settings[`Banner${i}Img`];
-                const text = settings[`Banner${i}Text`] || '';
-                const rawLink = (settings[`Banner${i}Link`] || '').toLowerCase().trim();
-                
-                // POPRAWIONE: Usunięto błąd "Sun" i dodano zabezpieczenie przed pustym tekstem
-                const rawPopupContent = settings[`Banner${i}PopupContent`] || '';
-                const popupContent = rawPopupContent.replace(/'/g, "\\'");
+            const img = settings[`Banner${i}Img`];
+            const text = settings[`Banner${i}Text`] || '';
+            const link = (settings[`Banner${i}Link`] || '').toLowerCase().trim();
+            const rawPopup = settings[`Banner${i}PopupContent`] || '';
 
-                if(img) {
-                    const isPopup = (rawLink === 'popup');
-                    const clickAction = isPopup 
-                        ? `onclick="event.preventDefault(); openDynamicPopup('${text}', '${popupContent}')"` 
-                        : `href="${settings[`Banner${i}Link`] || '#'}" target="_blank"`;
+            if(img) {
+                const isPopup = (link === 'popup');
+                // Używamy bezpiecznego kodowania tekstu
+                const safePopup = encodeURIComponent(rawPopup);
+                const clickAction = isPopup 
+                    ? `onclick="event.preventDefault(); openDynamicPopup('${text.replace(/'/g, "\\'")}', decodeURIComponent('${safePopup}'))"` 
+                    : `href="${settings[`Banner${i}Link`] || '#'}" target="_blank"`;
 
-                    bannersHTML += `
-                        <a ${clickAction} class="glass rounded-[2rem] overflow-hidden h-44 relative group cursor-pointer">
-                            <img src="${img}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-700">
-                            <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-all">
-                                <span class="text-white font-black uppercase italic text-xl tracking-tighter drop-shadow-lg text-center px-4">${text}</span>
-                            </div>
-                        </a>`;
-                }
+                bannersHTML += `
+                    <a ${clickAction} class="glass rounded-[2rem] overflow-hidden h-44 relative group cursor-pointer">
+                        <img src="${img}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-700">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-all">
+                            <span class="text-white font-black uppercase italic text-xl tracking-tighter drop-shadow-lg text-center px-4">${text}</span>
+                        </div>
+                    </a>`;
             }
+        }
             bannersRow.innerHTML = bannersHTML;
         }
         function startSlider() {
