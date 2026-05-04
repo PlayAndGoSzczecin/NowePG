@@ -359,9 +359,24 @@
         function openInfoModal(type) {
             const content = document.getElementById('infoContent');
             if(type === 'contact') {
-                content.innerHTML = `<h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">Kontakt</h2><div class="space-y-6"><p class="text-xl text-white"><strong>Adres:</strong><br>ul. Krzywoustego 49, 70-323 Szczecin</p><p class="text-xl text-white"><strong>Telefon:</strong><br><a href="tel:+48726222228" class="text-cyan-400 hover:underline">+48 726 222 228</a></p><p class="text-xl text-white"><strong>Email:</strong><br><a href="mailto:sklep@playandgo.pl" class="text-cyan-400 hover:underline">sklep@playandgo.pl</a></p></div>`;
+                content.innerHTML = `
+                    <h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">Kontakt</h2>
+                    <div class="space-y-6">
+                        <p class="text-xl text-white"><strong>Adres:</strong><br>ul. Krzywoustego 49, 70-323 Szczecin</p>
+                        <p class="text-xl text-white"><strong>Telefon:</strong><br><a href="tel:+48726222228" class="text-cyan-400 hover:underline">+48 726 222 228</a></p>
+                        <p class="text-xl text-white"><strong>Email:</strong><br><a href="mailto:sklep@playandgo.pl" class="text-cyan-400 hover:underline">sklep@playandgo.pl</a></p>
+                    </div>`;
             } else {
-                content.innerHTML = `<h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">Polityka Prywatności</h2><div class="text-zinc-300 text-sm">Zasady przetwarzania danych osobowych...</div>`;
+                content.innerHTML = `
+                    <h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">Polityka Prywatności</h2>
+                    <div class="text-zinc-300 text-sm space-y-4 leading-relaxed">
+                        <p><strong>1. Administrator Danych:</strong> Administratorem Twoich danych osobowych jest Play & Go z siedzibą w Szczecinie, ul. Krzywoustego 49.</p>
+                        <p><strong>2. Cel przetwarzania:</strong> Dane podane w formularzu rezerwacji (imię, numer telefonu) są przetwarzane wyłącznie w celu realizacji Twojej rezerwacji oraz kontaktu telefonicznego w sprawach z nią związanych.</p>
+                        <p><strong>3. Podstawa prawna:</strong> Przetwarzanie jest niezbędne do podjęcia działań na żądanie osoby, której dane dotyczą, przed zawarciem umowy (art. 6 ust. 1 lit. b RODO).</p>
+                        <p><strong>4. Okres przechowywania:</strong> Twoje dane są przechowywane przez okres niezbędny do realizacji rezerwacji, a następnie są usuwane, chyba że zdecydujesz się na stałą współpracę.</p>
+                        <p><strong>5. Twoje prawa:</strong> Masz prawo do wglądu w swoje dane, ich poprawiania, żądania usunięcia lub ograniczenia przetwarzania. W tym celu skontaktuj się z nami mailowo.</p>
+                        <p><strong>6. Bezpieczeństwo:</strong> Dbamy o to, aby Twoje dane były bezpieczne i nie były udostępniane podmiotom trzecim w celach marketingowych.</p>
+                    </div>`;
             }
             document.getElementById('infoModal').style.display = 'block';
         }
