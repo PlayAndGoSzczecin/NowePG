@@ -186,7 +186,7 @@
                 startSlider();
             }
 
-            // 3. Banery
+            // 3. Renderowanie 3 Banerów z obsługą Popupów
             const bannersRow = document.getElementById('banners-row');
             if (bannersRow) {
                 let bannersHTML = '';
@@ -198,13 +198,15 @@
 
                     if(img) {
                         const isPopup = (link === 'popup');
+                        // PAKUJEMY TEKST BEZPIECZNIE:
                         const safePopup = encodeURIComponent(rawPopup);
+                        
                         const clickAction = isPopup 
-                            ? `onclick="event.preventDefault(); openDynamicPopup('${text.replace(/'/g, "\\'")}', decodeURIComponent('${safePopup}'))"` 
+                            ? `onclick="event.preventDefault(); openDynamicPopup('${text.replace(/'/g, "\\'")}', '${safePopup}')"` 
                             : `href="${settings[`Banner${i}Link`] || '#'}" target="_blank"`;
 
                         bannersHTML += `
-                            <a ${clickAction} class="glass rounded-[2rem] overflow-hidden h-44 relative group cursor-pointer">
+                            <a ${clickAction} class="glass rounded-[2rem] overflow-hidden h-44 relative group cursor-pointer block">
                                 <img src="${img}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-700">
                                 <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-all">
                                     <span class="text-white font-black uppercase italic text-xl tracking-tighter drop-shadow-lg text-center px-4">${text}</span>
