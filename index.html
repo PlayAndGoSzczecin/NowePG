@@ -8,7 +8,7 @@
     <style>
         :root {
             --bg: #0a0a0c;
-            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-bg: rgba(255, 255, 255, 0.07); /* Nieco wyraźniejsze karty */
             --accent: #3b82f6;
             --text-main: #ffffff;
             --text-dim: #a1a1aa;
@@ -20,26 +20,27 @@
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg);
             color: var(--text-main);
-            overflow-x: hidden;
-            line-height: 1.6;
+            min-height: 100vh;
         }
 
-        /* NAPRAWA TŁA: Używamy dedykowanej warstwy zamiast background-attachment: fixed */
+        /* NAPRAWIONE TŁO: Teraz na 100% z tyłu i bez agresywnego filtra */
         .bg-fixed-layer {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
+            z-index: -1; /* Gwarancja, że jest pod wszystkim */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            transform: translateZ(0); /* Akceleracja sprzętowa */
-            filter: brightness(0.4);
+            transform: translateZ(0); 
+            opacity: 0.5; /* Subtelne tło, by nie gryzło się z tekstem */
         }
 
         .container {
+            position: relative;
+            z-index: 1; /* Treść zawsze nad tłem */
             max-width: 1400px;
             margin: 0 auto;
             padding: 40px 20px;
@@ -48,39 +49,38 @@
         header {
             text-align: center;
             margin-bottom: 60px;
-            padding-top: 40px;
+            padding-top: 60px;
         }
 
         h1 {
             font-size: 3.5rem;
             font-weight: 800;
-            letter-spacing: -1px;
-            background: linear-gradient(to bottom, #fff, #666);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
             margin-bottom: 80px;
         }
 
+        /* Karty w stylu Glassmorphism */
         .game-card {
             background: var(--card-bg);
-            border-radius: 20px;
+            border-radius: 16px;
             overflow: hidden;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
         }
 
         .game-card:hover {
-            transform: translateY(-10px) scale(1.02);
+            transform: translateY(-8px);
             border-color: var(--accent);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            background: rgba(255, 255, 255, 0.12);
         }
 
         .game-img {
@@ -90,133 +90,86 @@
         }
 
         .game-info {
-            padding: 20px;
+            padding: 15px 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
         }
 
         .game-title {
             font-weight: 600;
             font-size: 1.1rem;
-            margin-bottom: 5px;
         }
 
-        /* NAPRAWA STOPKI: Płynne pojawianie się */
         footer {
-            padding: 60px 0;
+            padding: 80px 0;
             text-align: center;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            opacity: 0; /* Domyślnie ukryta */
-            transition: opacity 1s ease-out;
-            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1.5s ease;
         }
 
         footer.visible {
             opacity: 1;
-            pointer-events: auto;
-        }
-
-        .footer-content h2 {
-            font-size: 2rem;
-            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Warstwa tła -->
     <div id="bg-layer" class="bg-fixed-layer"></div>
 
     <div class="container">
         <header>
-            <h1 id="site-title">Moja Kolekcja</h1>
-            <p id="site-desc" style="color: var(--text-dim)">Ładowanie biblioteki...</p>
+            <h1 id="site-title">Premium Gallery</h1>
+            <p id="site-desc" style="color: var(--text-dim)">Ekskluzywny przegląd biblioteki</p>
         </header>
 
         <div class="games-grid" id="games-grid">
-            <!-- Gry zostaną wstrzyknięte tutaj -->
+            <!-- Tutaj JS wstrzyknie karty -->
         </div>
 
         <footer id="main-footer">
-            <div class="footer-content">
-                <h2 id="footer-title">Dziękujemy za wizytę</h2>
-                <p id="footer-text" style="color: var(--text-dim)">Kolekcja gier 2024</p>
-            </div>
+            <h2 id="footer-title">Koniec Kolekcji</h2>
+            <p id="footer-text">2024 • Wszelkie prawa zastrzeżone</p>
         </footer>
     </div>
 
     <script>
-        // Symulacja danych z bazy (tutaj podepnij swoje dane)
-        const mockData = {
+        // Twoje dane (zmień URL tła na właściwy!)
+        const data = {
             settings: {
-                TytulStrony: "Premium Game Library",
-                OpisStrony: "Ekskluzywny przegląd mojej cyfrowej biblioteki",
-                TloStronyURL: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=2070",
-                StopkaTytul: "To już koniec kolekcji",
-                StopkaTekst: "Aktualizowane raz w tygodniu"
+                TytulStrony: "Moja Kolekcja Gier",
+                OpisStrony: "Zbiór najlepszych tytułów",
+                TloStronyURL: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070", 
+                StopkaTytul: "Dziękuję za oglądanie",
+                StopkaTekst: "Kolekcja aktualizowana na bieżąco"
             },
-            games: Array.from({ length: 24 }, (_, i) => ({
-                TytulGry: `Gra Numer ${i + 1}`,
-                MiniaturkaURL: `https://picsum.photos/seed/${i+40}/400/225`
+            games: Array.from({ length: 12 }, (_, i) => ({
+                TytulGry: `Super Gra ${i + 1}`,
+                MiniaturkaURL: `https://picsum.photos/seed/${i+10}/600/338`
             }))
         };
 
-        let footerObserver;
-
-        function init() {
-            renderUI(mockData);
-            setupFooterObserver();
-        }
-
-        function renderUI(data) {
-            const { settings, games } = data;
-
-            // Ustawienia strony
-            document.getElementById('site-title').textContent = settings.TytulStrony;
-            document.getElementById('site-desc').textContent = settings.OpisStrony;
-            document.getElementById('footer-title').textContent = settings.StopkaTytul;
-            document.getElementById('footer-text').textContent = settings.StopkaTekst;
-
-            // NAPRAWA TŁA: Dynamiczne przypisanie
-            if (settings.TloStronyURL) {
-                document.getElementById('bg-layer').style.backgroundImage = `url('${settings.TloStronyURL}')`;
-            }
-
-            // Renderowanie gier
+        function render() {
+            document.getElementById('site-title').textContent = data.settings.TytulStrony;
+            document.getElementById('site-desc').textContent = data.settings.OpisStrony;
+            document.getElementById('bg-layer').style.backgroundImage = `url('${data.settings.TloStronyURL}')`;
+            
             const grid = document.getElementById('games-grid');
-            grid.innerHTML = games.map(game => `
+            grid.innerHTML = data.games.map(g => `
                 <div class="game-card">
-                    <img src="${game.MiniaturkaURL}" class="game-img" alt="${game.TytulGry}" loading="lazy">
+                    <img src="${g.MiniaturkaURL}" class="game-img" alt="">
                     <div class="game-info">
-                        <div class="game-title">${game.TytulGry}</div>
+                        <div class="game-title">${g.TytulGry}</div>
                     </div>
                 </div>
             `).join('');
+
+            // Prosty mechanizm pokazania stopki przy scrollu
+            const observer = new IntersectionObserver((entries) => {
+                if(entries[0].isIntersecting) document.getElementById('main-footer').classList.add('visible');
+            }, { threshold: 0.1 });
+            observer.observe(document.getElementById('main-footer'));
         }
 
-        // NAPRAWA STOPKI: Obserwujemy samą stopkę
-        function setupFooterObserver() {
-            const footer = document.getElementById('main-footer');
-            
-            if (footerObserver) footerObserver.disconnect();
-
-            const options = {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.1 // Pokaż, gdy 10% stopki jest widoczne
-            };
-
-            footerObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        footer.classList.add('visible');
-                    }
-                });
-            }, options);
-
-            footerObserver.observe(footer);
-        }
-
-        // Uruchomienie
-        window.addEventListener('DOMContentLoaded', init);
+        render();
     </script>
 </body>
 </html>
