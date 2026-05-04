@@ -158,23 +158,47 @@
             } catch (e) { console.error("Błąd API:", e); }
         }
 
-        function renderUI() {
-            // ... (kod tła i slidera bez zmian) ...
+     function renderUI() {
+            // 1. Ustawienie tła strony
+            if (settings.TloStronyURL) {
+                document.body.style.backgroundImage = `url('${settings.TloStronyURL}')`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundAttachment = 'fixed';
+            }
 
+            // 2. Renderowanie Slidera (na górze po prawej)
+            const slider = document.getElementById('main-slider');
+            let sliderHTML = '';
+            for(let i=1; i<=3; i++) {
+                const img = settings[`Slider${i}Img`];
+                const link = settings[`Slider${i}Link`] || '#';
+                if(img) {
+                    sliderHTML += `
+                        <a href="${link}" target="_blank" class="slide ${i===1 ? 'active' : ''}">
+                            <img src="${img}">
+                        </a>`;
+                }
+            }
+            slider.innerHTML = sliderHTML;
+            startSlider();
+
+            // 3. Renderowanie 3 Banerów z obsługą Popupów
             const bannersRow = document.getElementById('banners-row');
             let bannersHTML = '';
             for(let i=1; i<=3; i++) {
                 const img = settings[`Banner${i}Img`];
                 const text = settings[`Banner${i}Text`] || '';
-                const link = settings[`Banner${i}Link`] || '#';
-                const popupContent = settings[`Banner${i}PopupContent` Sun]; // Pobieramy treść z arkusza
+                const rawLink = (settings[`Banner${i}Link`] || '').toLowerCase().trim();
+                
+                // POPRAWIONE: Usunięto błąd "Sun" i dodano zabezpieczenie przed pustym tekstem
+                const rawPopupContent = settings[`Banner${i}PopupContent`] || '';
+                const popupContent = rawPopupContent.replace(/'/g, "\\'");
 
                 if(img) {
-                    // Jeśli w linku wpiszesz "popup", otworzy się okno z treścią z arkusza
-                    const isPopup = link.toLowerCase() === 'popup';
+                    const isPopup = (rawLink === 'popup');
                     const clickAction = isPopup 
-                        ? `onclick="event.preventDefault(); openDynamicPopup('${text}', '${popupContent.replace(/'/g, "\\'")}')"` 
-                        : `href="${link}" target="_blank"`;
+                        ? `onclick="event.preventDefault(); openDynamicPopup('${text}', '${popupContent}')"` 
+                        : `href="${settings[`Banner${i}Link`] || '#'}" target="_blank"`;
 
                     bannersHTML += `
                         <a ${clickAction} class="glass rounded-[2rem] overflow-hidden h-44 relative group cursor-pointer">
