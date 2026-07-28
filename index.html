@@ -24,27 +24,28 @@
     <meta name="twitter:title" content="Play & Go Szczecin | Wypożyczalnia Gier">
     <meta name="twitter:description" content="Najlepsze tytuły na wyciągnięcie ręki. Zarezerwuj grę online i odbierz w sklepie.">
     <meta name="twitter:image" content="https://playandgo.pl/og-image.jpg">
+
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src * data:; connect-src https://*.google.com https://*.googleapis.com https://*.googleusercontent.com; frame-ancestors 'none';">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+
     <title>Play & Go Szczecin | Rezerwacje Gier</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #00f2ff; --bg: #05050a; }
-        body { 
-            font-family: 'Outfit', sans-serif; 
-            background-color: var(--bg); 
-            color: #fff; 
-            overflow-x: hidden; 
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: #fff;
+            overflow-x: hidden;
             scroll-behavior: smooth;
         }
-        .glass { 
-            backdrop-filter: blur(20px); 
-            background: rgba(0, 0, 0, 0.55); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
+        .glass {
+            backdrop-filter: blur(20px);
+            background: rgba(0, 0, 0, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
         .main-shroud {
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(15px);
@@ -58,7 +59,7 @@
 
         .game-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .game-card:hover { transform: translateY(-10px); border-color: var(--accent); box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); }
-        
+
         .slider-container { position: relative; border-radius: 1rem; height: 180px; background: #000; overflow: hidden; }
         @media (min-width: 640px) { .slider-container { height: 220px; border-radius: 1.5rem; } }
         @media (min-width: 1024px) { .slider-container { height: 280px; border-radius: 2rem; } }
@@ -68,17 +69,21 @@
 
         .custom-input { background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.15); padding: 0.6rem 0.85rem; border-radius: 0.75rem; color: #fff; width: 100%; font-size: 0.85rem; }
         .custom-input:focus { border-color: var(--accent); outline: none; }
-        
+
         .modal { display: none; position: fixed; z-index: 100; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); }
-        .text-gradient { background: linear-gradient(90deg, #fff, #ffcc00, #00f2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: pulse-gradient 8s linear infinite; }
+        .text-gradient { background: linear-gradient(90deg, #fff, #ffcc00, #00f2ff); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: pulse-gradient 8s linear infinite; }
         @keyframes pulse-gradient { to { background-position: 200% center; } }
 
-        /* Checkbox - ikona ptaszka */
+        /* Scrollbar TOP 100 — ukryty na wszystkich przeglądarkach */
+        #top100-scroll::-webkit-scrollbar { display: none; }
+        #top100-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+
+        /* Checkbox */
         #privacyCheck:checked ~ div #checkIcon,
         #privacyCheck:checked + div svg { display: block; }
         #privacyCheck:checked + div { background: #00f2ff; border-color: #00f2ff; }
 
-        /* Style stopki */
+        /* Stopka */
         footer a { transition: color 0.3s ease; }
         footer h4 { position: relative; }
         footer h4::after {
@@ -93,7 +98,6 @@
     </style>
 </head>
 <body>
-
     <nav class="sticky top-0 z-50 glass border-b border-white/5 px-6 py-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.reload()">
@@ -126,7 +130,6 @@
                     </div>
                 </div>
             </header>
-
             <section>
                 <h4 class="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-500 mb-2 text-center">Nasze Promocje & Nowości</h4>
                 <div id="banners-row" class="grid grid-cols-1 sm:grid-cols-3 gap-2"></div>
@@ -143,7 +146,7 @@
             </div>
         </div>
         <div id="top100-loading" class="text-center py-6 uppercase font-black text-xs tracking-widest text-zinc-600">Ładowanie rankingu...</div>
-        <div id="top100-scroll" class="flex gap-3 overflow-x-auto pb-3" style="scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none;"></div>
+        <div id="top100-scroll" class="flex gap-3 overflow-x-auto pb-3" style="scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;"></div>
     </section>
 
     <main class="max-w-7xl mx-auto px-3 sm:px-6 py-8">
@@ -168,14 +171,10 @@
         <div id="loading" class="text-center py-20 uppercase font-black text-xs tracking-widest text-zinc-500">Synchronizacja z bazą gier...</div>
         <div id="games-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4"></div>
     </main>
-
     <footer class="mt-12 border-t border-white/10 bg-black/40 backdrop-blur-xl py-6">
         <div class="max-w-7xl mx-auto px-6">
-
-            <!-- Główna linia: logo | kontakt | godziny | social -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-start mb-4">
-
-                <!-- Logo + opis -->
+                <!-- Logo -->
                 <div class="col-span-2 md:col-span-1 flex items-center gap-3 pb-3 border-b border-white/5 md:border-0 md:pb-0">
                     <div class="w-8 h-8 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
                         <span class="text-black font-black text-sm">P</span>
@@ -185,7 +184,6 @@
                         <p class="text-zinc-600 text-[10px] leading-tight mt-0.5">Wypożyczalnia gier · Szczecin</p>
                     </div>
                 </div>
-
                 <!-- Kontakt -->
                 <div>
                     <p class="text-[9px] uppercase font-black tracking-[0.2em] text-zinc-500 mb-2">Kontakt</p>
@@ -195,7 +193,6 @@
                         <li><a href="mailto:sklep@playandgo.pl" class="hover:text-white transition">✉️ sklep@playandgo.pl</a></li>
                     </ul>
                 </div>
-
                 <!-- Godziny -->
                 <div>
                     <p class="text-[9px] uppercase font-black tracking-[0.2em] text-zinc-500 mb-2">Godziny</p>
@@ -205,7 +202,6 @@
                         <li class="flex justify-between gap-2"><span class="text-zinc-400">Nd</span><span class="text-red-500 text-[10px] uppercase font-bold">Zamkn.</span></li>
                     </ul>
                 </div>
-
                 <!-- Social -->
                 <div>
                     <p class="text-[9px] uppercase font-black tracking-[0.2em] text-zinc-500 mb-2">Znajdź nas</p>
@@ -225,8 +221,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Dolna linia -->
             <div class="border-t border-white/5 pt-4 flex flex-col md:flex-row justify-between items-center gap-2">
                 <p class="text-zinc-600 text-[10px] uppercase tracking-widest">&copy; 2026 Play & Go Szczecin. All Rights Reserved.</p>
                 <div class="flex gap-6">
@@ -234,10 +228,8 @@
                     <button onclick="openInfoModal('contact')" class="text-zinc-600 hover:text-zinc-400 text-[10px] uppercase tracking-widest transition">Regulamin</button>
                 </div>
             </div>
-
         </div>
     </footer>
-
     <!-- MODAL REZERWACJI -->
     <div id="resModal" class="modal">
         <div class="relative top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-lg glass p-10 rounded-[3rem]">
@@ -247,25 +239,21 @@
                 <form id="resForm" class="space-y-4">
                     <input type="hidden" id="gameTitle">
                     <input type="hidden" id="gameCondition">
-                    <!-- HONEYPOT: ukryte pole — boty je wypełniają, ludzie nie -->
+                    <!-- HONEYPOT -->
                     <input type="text" id="hpField" name="website" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
                     <input type="text" id="custName" class="custom-input" placeholder="Imię i Nazwisko" required autocomplete="off" maxlength="100">
-
                     <div>
                         <input type="tel" id="custPhone" class="custom-input" placeholder="Numer telefonu (np. 726 222 228)" required autocomplete="off" maxlength="20">
                         <p id="phoneError" class="text-red-400 text-[11px] font-semibold mt-1 ml-1 hidden">Podaj poprawny numer telefonu (9 cyfr).</p>
                     </div>
-
                     <div>
                         <input type="email" id="custEmail" class="custom-input" placeholder="Adres e-mail" required autocomplete="off" maxlength="100">
                         <p id="emailError" class="text-red-400 text-[11px] font-semibold mt-1 ml-1 hidden">Podaj poprawny adres e-mail.</p>
                     </div>
-
                     <div class="bg-black/60 p-6 rounded-2xl border border-white/10 text-center">
                         <label id="captchaQuestion" class="text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-3 block"></label>
                         <input type="number" id="humanVerify" class="custom-input text-center text-2xl font-bold" placeholder="?" required>
                     </div>
-
                     <label class="flex items-start gap-3 cursor-pointer group">
                         <div class="relative mt-0.5 flex-shrink-0">
                             <input type="checkbox" id="privacyCheck" class="sr-only peer" required>
@@ -278,7 +266,6 @@
                         </span>
                     </label>
                     <p id="privacyError" class="text-red-400 text-[11px] font-semibold ml-1 hidden">Wymagana zgoda na przetwarzanie danych.</p>
-
                     <button type="submit" id="submitBtn" class="w-full bg-cyan-500 text-black font-black py-5 rounded-2xl uppercase tracking-tighter text-lg hover:bg-white transition-all transform hover:scale-[1.02]">Potwierdzam Rezerwację</button>
                 </form>
             </div>
@@ -298,129 +285,80 @@
             <div id="infoContent" class="text-zinc-300 overflow-y-auto pr-4"></div>
         </div>
     </div>
-
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzRLEwR-sOXZfQO0g1YHirHOPKKcc8maEr6GRfStTe7iYwiygDomQPtHATdKMlOUdfM/exec';
-        const TOP100_URL = 'https://script.google.com/macros/s/AKfycbzDWcC0avVIWNowqREcg-V6lQJJfFgx8N8-jJAh-iZ4vDVSc2g5q3XqiV3cbYCsr5MKNA/exec';
+        const API_URL     = 'https://script.google.com/macros/s/AKfycbzRLEwR-sOXZfQO0g1YHirHOPKKcc8maEr6GRfStTe7iYwiygDomQPtHATdKMlOUdfM/exec';
+        const TOP100_URL  = 'https://script.google.com/macros/s/AKfycbzDWcC0avVIWNowqREcg-V6lQJJfFgx8N8-jJAh-iZ4vDVSc2g5q3XqiV3cbYCsr5MKNA/exec';
         let allGames = [];
         let settings = {};
         let correctCaptchaAnswer = 0;
-        let formOpenedAt = 0;
 
         function b64EncodeUnicode(str) {
-            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
-                return String.fromCharCode('0x' + p1);
-            }));
+            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode('0x' + p1)));
         }
-
         function b64DecodeUnicode(str) {
-            return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
+            return decodeURIComponent(Array.prototype.map.call(atob(str), c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
         }
 
         async function init() {
             try {
-                const res = await fetch(API_URL);
+                const res  = await fetch(API_URL);
                 const data = await res.json();
-                allGames = data.games || [];
-                settings = data.settings || {};
+                allGames   = data.games    || [];
+                settings   = data.settings || {};
                 renderUI();
                 buildPlatformMenu();
                 handleFilter();
                 document.getElementById('loading').style.display = 'none';
             } catch (e) {
-                console.error("Błąd API:", e);
+                console.error('Błąd API:', e);
                 document.getElementById('loading').innerHTML = 'Nie udało się załadować katalogu gier. Spróbuj odświeżyć stronę.';
                 document.getElementById('game-count').innerText = '0';
-            }
-            loadTop100();
-        }
-
-        async function loadTop100() {
-            const container = document.getElementById('top100-scroll');
-            const loading = document.getElementById('top100-loading');
-            if (!container) return;
-            try {
-                const res = await fetch(TOP100_URL);
-                const topGames = await res.json();
-                if (loading) loading.style.display = 'none';
-                
-                if (!Array.isArray(topGames) || topGames.length === 0) {
-                    container.innerHTML = '<p class="text-zinc-500 text-xs">Brak danych rankingu.</p>';
-                    return;
-                }
-
-                container.innerHTML = topGames.map((g, idx) => `
-                    <div class="flex-shrink-0 w-36 glass rounded-2xl p-2.5 border border-white/5 relative group hover:border-cyan-400 transition" style="scroll-snap-align: start;">
-                        <div class="absolute top-1.5 left-1.5 z-10 bg-red-600 text-white font-black text-[10px] px-1.5 py-0.5 rounded-md shadow">
-                            #${idx + 1}
-                        </div>
-                        <div class="h-28 bg-zinc-900 rounded-xl overflow-hidden mb-2 relative">
-                            <img src="${g.image || g.OkladkaURL || 'https://placehold.co/200x300/222/444?text=BRAK'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        </div>
-                        <h4 class="font-black text-[10px] uppercase italic truncate text-zinc-200">${g.title || g.Tytul || ''}</h4>
-                        <p class="text-[9px] text-zinc-500 uppercase font-bold">${g.platform || g.Platforma || ''}</p>
-                    </div>
-                `).join('');
-            } catch (e) {
-                if (loading) loading.innerText = 'Nie udało się załadować Top 100.';
             }
         }
 
         function renderUI() {
             if (settings.TloStronyURL) {
-                document.body.style.backgroundImage = `url('${settings.TloStronyURL}')`;
-                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundImage  = `url('${settings.TloStronyURL}')`;
+                document.body.style.backgroundSize   = 'cover';
                 document.body.style.backgroundAttachment = 'fixed';
             }
-
             const slider = document.getElementById('main-slider');
             if (slider) {
-                let sliderHTML = '';
-                for(let i=1; i<=3; i++) {
-                    const img = settings[`Slider${i}Img`];
+                let html = '';
+                for (let i = 1; i <= 3; i++) {
+                    const img  = settings[`Slider${i}Img`];
                     const link = settings[`Slider${i}Link`] || '#';
-                    if(img) {
-                        sliderHTML += `<a href="${link}" target="_blank" rel="noopener noreferrer" class="slide ${i===1 ? 'active' : ''}"><img src="${img}" alt="Slider"></a>`;
-                    }
+                    if (img) html += `<a href="${link}" target="_blank" rel="noopener noreferrer" class="slide ${i===1?'active':''}"><img src="${img}" alt="Slider"></a>`;
                 }
-                slider.innerHTML = sliderHTML;
+                slider.innerHTML = html;
                 startSlider();
             }
-
             const bannersRow = document.getElementById('banners-row');
             if (bannersRow) {
-                let bannersHTML = '';
-                for(let i=1; i<=3; i++) {
-                    const img = settings[`Banner${i}Img`];
-                    const text = settings[`Banner${i}Text`] || '';
-                    const link = (settings[`Banner${i}Link`] || '').toLowerCase().trim();
+                let html = '';
+                for (let i = 1; i <= 3; i++) {
+                    const img      = settings[`Banner${i}Img`];
+                    const text     = settings[`Banner${i}Text`]         || '';
+                    const link     = (settings[`Banner${i}Link`]        || '').toLowerCase().trim();
                     const rawPopup = settings[`Banner${i}PopupContent`] || '';
-                    if(img) {
-                        const isPopup = (link === 'popup');
+                    if (img) {
+                        const isPopup     = (link === 'popup');
                         const safeContent = b64EncodeUnicode(rawPopup);
-                        const safeTitle = text.replace(/'/g, "\\'");
-                        const clickAction = isPopup 
-                            ? `onclick="event.preventDefault(); openDynamicPopup('${safeTitle}', '${safeContent}')"` 
+                        const safeTitle   = text.replace(/'/g, "\\'");
+                        const action      = isPopup
+                            ? `onclick="event.preventDefault(); openDynamicPopup('${safeTitle}', '${safeContent}')"`
                             : `href="${settings[`Banner${i}Link`] || '#'}" target="_blank" rel="noopener noreferrer"`;
-                        bannersHTML += `
-                            <a ${clickAction} class="glass rounded-[1.2rem] overflow-hidden h-24 relative group cursor-pointer block">
-                                <img src="${img}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-700">
-                                <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-all">
-                                    <span class="text-white font-black uppercase italic text-sm tracking-tighter drop-shadow-lg text-center px-4">${text}</span>
-                                </div>
-                            </a>`;
+                        html += `<a ${action} class="glass rounded-[1.2rem] overflow-hidden h-24 relative group cursor-pointer block"><img src="${img}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-700"><div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-all"><span class="text-white font-black uppercase italic text-sm tracking-tighter drop-shadow-lg text-center px-4">${text}</span></div></a>`;
                     }
                 }
-                bannersRow.innerHTML = bannersHTML;
+                bannersRow.innerHTML = html;
             }
         }
 
         function startSlider() {
             const slides = document.querySelectorAll('.slide');
-            let current = 0;
-            if(slides.length > 1) {
+            let current  = 0;
+            if (slides.length > 1) {
                 setInterval(() => {
                     slides[current].classList.remove('active');
                     current = (current + 1) % slides.length;
@@ -430,20 +368,18 @@
         }
 
         function sanitizeHTML(str) {
-            const div = document.createElement('div');
-            div.appendChild(document.createTextNode(str));
-            return div.innerHTML;
+            const d = document.createElement('div');
+            d.appendChild(document.createTextNode(str));
+            return d.innerHTML;
         }
 
         function openDynamicPopup(title, encodedContent) {
-            const content = document.getElementById('infoContent');
-            const rawText = b64DecodeUnicode(encodedContent);
+            const rawText  = b64DecodeUnicode(encodedContent);
             const safeTitle = sanitizeHTML(title);
-            const safeText = sanitizeHTML(rawText).replace(/\n/g, '<br>');
-            content.innerHTML = `<h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">${safeTitle}</h2><div class="space-y-4 text-zinc-300 text-base leading-relaxed font-light">${safeText}</div>`;
+            const safeText  = sanitizeHTML(rawText).replace(/\n/g, '<br>');
+            document.getElementById('infoContent').innerHTML = `<h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">${safeTitle}</h2><div class="space-y-4 text-zinc-300 text-base leading-relaxed font-light">${safeText}</div>`;
             document.getElementById('infoModal').style.display = 'block';
         }
-
         function renderGames(games) {
             const grid = document.getElementById('games-grid');
             if (!grid) return;
@@ -456,12 +392,8 @@
                     </div>
                     <h3 class="font-black text-[11px] uppercase italic leading-tight break-words min-h-[2.2rem] flex items-center justify-center text-center px-1 mb-2 text-gradient drop-shadow-[0_0_8px_rgba(0,242,255,0.4)]">${g.title}</h3>
                     <div class="mt-auto flex justify-between items-center bg-black/50 rounded-xl p-2 border border-white/5">
-                        <div class="flex flex-col">
-                            <span class="font-black text-sm text-white tracking-tighter">${g.price} <span class="text-[10px] font-normal text-zinc-400">PLN</span></span>
-                        </div>
-                        <button onclick="openModal('${g.title.replace(/'/g, "\\'")}', '${g.platform}', '${(g.description || '').replace(/'/g, "\\'")}')" class="bg-red-600 text-white px-3 h-8 rounded-lg flex items-center justify-center hover:bg-red-500 transition-colors shadow-lg shadow-red-600/20 text-[10px] font-black uppercase tracking-wider">
-                            Rezerwuj
-                        </button>
+                        <span class="font-black text-sm text-white tracking-tighter">${g.price} <span class="text-[10px] font-normal text-zinc-400">PLN</span></span>
+                        <button onclick="openModal('${g.title.replace(/'/g, "\\'")}', '${g.platform}', '${(g.description||'').replace(/'/g, "\\'")}')" class="bg-red-600 text-white px-3 h-8 rounded-lg flex items-center justify-center hover:bg-red-500 transition-colors shadow-lg shadow-red-600/20 text-[10px] font-black uppercase tracking-wider">Rezerwuj</button>
                     </div>
                 </div>`).join('');
         }
@@ -469,21 +401,21 @@
         function buildPlatformMenu() {
             const select = document.getElementById('platformFilter');
             if (!select) return;
-            const myPlatforms = ["PlayStation 1", "PlayStation 2", "PlayStation 3", "PlayStation 4", "PlayStation 5", "PlayStation Vita", "Nintendo Switch", "Nintendo Switch 2", "Konsole", "Akcesoria", "Gadżety"];
+            const myPlatforms = ["PlayStation 1","PlayStation 2","PlayStation 3","PlayStation 4","PlayStation 5","PlayStation Vita","Nintendo Switch","Nintendo Switch 2","Konsole","Akcesoria","Gadżety"];
             const finalPlatforms = [...new Set([...myPlatforms, ...[...new Set(allGames.map(g => g.platform))].filter(p => p)])];
             select.innerHTML = '<option value="all">Wszystkie Kategorie</option>' + finalPlatforms.map(p => `<option value="${p}">${p}</option>`).join('');
         }
 
         function handleFilter() {
-            const q = document.getElementById('search').value.toLowerCase();
-            const p = document.getElementById('platformFilter').value;
+            const q    = document.getElementById('search').value.toLowerCase();
+            const p    = document.getElementById('platformFilter').value;
             const sort = document.getElementById('sortOrder').value;
             let filtered = allGames.filter(g => (p === 'all' || g.platform === p) && g.title.toLowerCase().includes(q));
-            if(sort === 'price-asc')     filtered.sort((a,b) => parseFloat(a.price) - parseFloat(b.price));
-            if(sort === 'price-desc')    filtered.sort((a,b) => parseFloat(b.price) - parseFloat(a.price));
-            if(sort === 'title-asc')     filtered.sort((a,b) => a.title.localeCompare(b.title, 'pl'));
-            if(sort === 'title-desc')    filtered.sort((a,b) => b.title.localeCompare(a.title, 'pl'));
-            if(sort === 'platform-asc')  filtered.sort((a,b) => (a.platform||'').localeCompare(b.platform||'', 'pl'));
+            if (sort === 'price-asc')    filtered.sort((a,b) => parseFloat(a.price) - parseFloat(b.price));
+            if (sort === 'price-desc')   filtered.sort((a,b) => parseFloat(b.price) - parseFloat(a.price));
+            if (sort === 'title-asc')    filtered.sort((a,b) => a.title.localeCompare(b.title, 'pl'));
+            if (sort === 'title-desc')   filtered.sort((a,b) => b.title.localeCompare(a.title, 'pl'));
+            if (sort === 'platform-asc') filtered.sort((a,b) => (a.platform||'').localeCompare(b.platform||'', 'pl'));
             document.getElementById('game-count').innerText = filtered.length;
             renderGames(filtered);
         }
@@ -493,10 +425,10 @@
             const n2 = Math.floor(Math.random() * 9) + 1;
             correctCaptchaAnswer = n1 + n2;
             document.getElementById('captchaQuestion').innerText = `Ile to ${n1} + ${n2}?`;
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('gameTitle').value = `${title} (${platform})`;
-            document.getElementById('gameCondition').value = condition || '';
-            document.getElementById('resModal').style.display = 'block';
+            document.getElementById('modalTitle').innerText       = title;
+            document.getElementById('gameTitle').value            = `${title} (${platform})`;
+            document.getElementById('gameCondition').value        = condition || '';
+            document.getElementById('resModal').style.display     = 'block';
             document.getElementById('formContainer').style.display = 'block';
             document.getElementById('successMessage').style.display = 'none';
             formOpenedAt = Date.now();
@@ -508,126 +440,122 @@
             document.getElementById('phoneError').classList.add('hidden');
             document.getElementById('emailError').classList.add('hidden');
             document.getElementById('privacyError').classList.add('hidden');
+            document.getElementById('submitBtn').disabled  = false;
+            document.getElementById('submitBtn').innerHTML = 'Potwierdzam Rezerwację';
         }
-
+        function closeInfoModal() { document.getElementById('infoModal').style.display = 'none'; }
         function openInfoModal(type) {
             const content = document.getElementById('infoContent');
             if (type === 'contact') {
-                content.innerHTML = `
-                    <h2 class="text-3xl font-black uppercase italic text-cyan-400 mb-6">Kontakt & Regulamin</h2>
-                    <div class="space-y-4 text-sm font-light leading-relaxed">
-                        <p><strong>Wypożyczalnia Gier Play & Go Szczecin</strong></p>
-                        <p>📍 Adres: ul. Krzywoustego 49, Szczecin</p>
-                        <p>📞 Telefon: 726 222 228</p>
-                        <p>✉️ E-mail: sklep@playandgo.pl</p>
-                        <hr class="border-white/10 my-4">
-                        <h3 class="font-bold text-white uppercase text-base">Zasady Rezerwacji</h3>
-                        <p>1. Rezerwacja złożona przez stronę jest ważna przez 24 godziny od momentu potwierdzenia.</p>
-                        <p>2. Odbiór zarezerwowanych gier odbywa się stacjonarnie w naszym punkcie.</p>
-                        <p>3. Do wypożyczenia gry wymagany jest ważny dokument tożsamości.</p>
-                    </div>`;
-            } else if (type === 'privacy') {
-                content.innerHTML = `
-                    <h2 class="text-3xl font-black uppercase italic text-cyan-400 mb-6">Polityka Prywatności</h2>
-                    <div class="space-y-4 text-sm font-light leading-relaxed">
-                        <p>Szanujemy Twoją prywatność. Poniżej znajdują się najważniejsze informacje o przetwarzaniu danych osobowych w Play & Go Szczecin:</p>
-                        <p><strong>1. Administrator Danych</strong><br>Administratorem danych osobowych jest Play & Go Szczecin z siedzibą przy ul. Krzywoustego 49.</p>
-                        <p><strong>2. Cel przetwarzania</strong><br>Dane przekazane w formularzu rezerwacyjnym (Imię, Telefon, E-mail) służą wyłącznie do kontaktowania się z Tobą w sprawie obsługi złożonej rezerwacji.</p>
-                        <p><strong>3. Bezpieczeństwo</strong><br>Nie udostępniamy Twoich danych osobom trzecim ani firmom zewnętrznym w celach marketingowych.</p>
-                    </div>`;
+                content.innerHTML = `<h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">Kontakt</h2><div class="space-y-6"><p class="text-xl text-white"><strong>Adres:</strong><br>ul. Krzywoustego 49, 70-323 Szczecin</p><p class="text-xl text-white"><strong>Telefon:</strong><br><a href="tel:+48726222228" class="text-cyan-400 hover:underline">+48 726 222 228</a></p><p class="text-xl text-white"><strong>Email:</strong><br><a href="mailto:sklep@playandgo.pl" class="text-cyan-400 hover:underline">sklep@playandgo.pl</a></p></div>`;
+            } else {
+                content.innerHTML = `<h2 class="text-4xl font-black uppercase italic text-cyan-400 mb-8 tracking-tighter">Polityka Prywatności</h2><div class="space-y-6 text-zinc-300 text-sm leading-relaxed"><div><h3 class="text-white font-black uppercase italic tracking-tight text-base mb-2">1. Administrator danych</h3><p>Administratorem Twoich danych osobowych jest Play &amp; Go Szczecin, ul. Krzywoustego 49, 70-323 Szczecin, e-mail: <a href="mailto:sklep@playandgo.pl" class="text-cyan-400 hover:underline">sklep@playandgo.pl</a>, tel. <a href="tel:+48726222228" class="text-cyan-400 hover:underline">+48 726 222 228</a>.</p></div><div><h3 class="text-white font-black uppercase italic tracking-tight text-base mb-2">2. Jakie dane zbieramy?</h3><p>Podczas składania rezerwacji zbieramy: imię i nazwisko, numer telefonu, adres e-mail oraz tytuł rezerwowanej gry.</p></div><div><h3 class="text-white font-black uppercase italic tracking-tight text-base mb-2">3. Cel i podstawa przetwarzania</h3><p>Dane przetwarzamy w celu realizacji rezerwacji. Podstawa prawna: art. 6 ust. 1 lit. b RODO.</p></div><div><h3 class="text-white font-black uppercase italic tracking-tight text-base mb-2">4. Czas przechowywania</h3><p>Dane przechowujemy nie dłużej niż 30 dni od rezerwacji.</p></div><div><h3 class="text-white font-black uppercase italic tracking-tight text-base mb-2">5. Udostępnianie danych</h3><p>Dane nie są sprzedawane. Mogą być przekazane dostawcom usług technicznych (Google Sheets) wyłącznie w zakresie niezbędnym do działania serwisu.</p></div><div><h3 class="text-white font-black uppercase italic tracking-tight text-base mb-2">6. Twoje prawa</h3><ul class="list-disc list-inside mt-2 space-y-1 text-zinc-400"><li>dostęp, sprostowanie, usunięcie danych</li><li>ograniczenie przetwarzania i sprzeciw</li><li>skarga do Prezesa UODO (uodo.gov.pl)</li></ul><p class="mt-2">Kontakt: <a href="mailto:sklep@playandgo.pl" class="text-cyan-400 hover:underline">sklep@playandgo.pl</a></p></div><div><h3 class="text-white font-black uppercase italic tracking-tight text-base mb-2">7. Cookies</h3><p>Strona nie używa własnych cookies. Google Fonts i Tailwind CDN mogą zapisywać własne cookies.</p></div><div><h3 class="text-white font-black uppercase italic tracking-tight text-base mb-2">8. Zmiany polityki</h3><p>Ostatnia aktualizacja: <span class="text-white font-semibold">maj 2026</span>.</p></div></div>`;
             }
             document.getElementById('infoModal').style.display = 'block';
         }
 
-        function closeInfoModal() {
-            document.getElementById('infoModal').style.display = 'none';
+        // ── ANTI-SPAM ──────────────────────────────────────────────
+        const SPAM_KEY    = 'pg_submissions';
+        const SPAM_LIMIT  = 3;
+        const SPAM_WINDOW = 10 * 60 * 1000;
+        let formOpenedAt  = 0;
+
+        function spamCheckRate() {
+            const now = Date.now();
+            let log = JSON.parse(localStorage.getItem(SPAM_KEY) || '[]');
+            log = log.filter(t => now - t < SPAM_WINDOW);
+            if (log.length >= SPAM_LIMIT) {
+                const wait = Math.ceil((SPAM_WINDOW - (now - log[0])) / 60000);
+                alert(`Zbyt wiele zgłoszeń. Spróbuj ponownie za około ${wait} min.`);
+                return false;
+            }
+            log.push(now);
+            localStorage.setItem(SPAM_KEY, JSON.stringify(log));
+            return true;
         }
 
-        // Event Listenere
-        document.getElementById('search').addEventListener('input', handleFilter);
-        document.getElementById('platformFilter').addEventListener('change', handleFilter);
-        document.getElementById('sortOrder').addEventListener('change', handleFilter);
+        function spamCheckTime() {
+            if (Date.now() - formOpenedAt < 3000) {
+                alert('Formularz wypełniony zbyt szybko. Spróbuj ponownie.');
+                return false;
+            }
+            return true;
+        }
 
-        document.getElementById('resForm').addEventListener('submit', async function(e) {
+        document.getElementById('resForm').onsubmit = async (e) => {
             e.preventDefault();
-
-            // Ochrona przed botami (Honeypot + Captcha)
             if (document.getElementById('hpField').value !== '') return;
-            
-            const userAns = parseInt(document.getElementById('humanVerify').value, 10);
-            if (userAns !== correctCaptchaAnswer) {
-                alert('Błędna odpowiedź na pytanie weryfikacyjne!');
-                return;
+            if (!spamCheckTime()) return;
+
+            const phoneRaw    = document.getElementById('custPhone').value.trim();
+            const phoneDigits = phoneRaw.replace(/[\s\-]/g, '').replace(/^\+48/, '');
+            const phoneValid  = /^\d{9}$/.test(phoneDigits);
+            document.getElementById('phoneError').classList.toggle('hidden', phoneValid);
+            if (!phoneValid) { document.getElementById('custPhone').focus(); return; }
+
+            const emailRaw   = document.getElementById('custEmail').value.trim();
+            const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailRaw);
+            document.getElementById('emailError').classList.toggle('hidden', emailValid);
+            if (!emailValid) { document.getElementById('custEmail').focus(); return; }
+
+            if (parseInt(document.getElementById('humanVerify').value) !== correctCaptchaAnswer) {
+                alert('Błędny wynik działania!'); return;
             }
 
-            const phone = document.getElementById('custPhone').value.trim();
-            const email = document.getElementById('custEmail').value.trim();
-            const privacy = document.getElementById('privacyCheck').checked;
+            const privacyChecked = document.getElementById('privacyCheck').checked;
+            document.getElementById('privacyError').classList.toggle('hidden', privacyChecked);
+            if (!privacyChecked) return;
 
-            let valid = true;
-            if (!/^[0-9\s\+\-]{9,15}$/.test(phone)) {
-                document.getElementById('phoneError').classList.remove('hidden');
-                valid = false;
-            } else {
-                document.getElementById('phoneError').classList.add('hidden');
-            }
+            if (!spamCheckRate()) return;
 
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                document.getElementById('emailError').classList.remove('hidden');
-                valid = false;
-            } else {
-                document.getElementById('emailError').classList.add('hidden');
-            }
-
-            if (!privacy) {
-                document.getElementById('privacyError').classList.remove('hidden');
-                valid = false;
-            } else {
-                document.getElementById('privacyError').classList.add('hidden');
-            }
-
-            if (!valid) return;
-
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'Wysyłanie...';
-
-            const payload = {
-                action: 'reserve',
-                gameTitle: document.getElementById('gameTitle').value,
-                gameCondition: document.getElementById('gameCondition').value,
-                name: document.getElementById('custName').value.trim(),
-                phone: phone,
-                email: email
-            };
-
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true; btn.innerHTML = 'Wysyłanie...';
+            const params = new URLSearchParams({
+                gameId:  document.getElementById('gameTitle').value,
+                imie:    document.getElementById('custName').value,
+                telefon: phoneRaw,
+                email:   emailRaw,
+                stan:    document.getElementById('gameCondition').value
+            });
             try {
-                await fetch(API_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+                await fetch(API_URL + '?' + params.toString(), { mode: 'no-cors' });
                 document.getElementById('formContainer').style.display = 'none';
                 document.getElementById('successMessage').style.display = 'block';
             } catch (err) {
-                alert('Wystąpił błąd podczas wysyłania zgłoszenia. Spróbuj ponownie.');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = 'Potwierdzam Rezerwację';
+                alert('Błąd połączenia.');
+                btn.disabled = false;
+                btn.innerHTML = 'Potwierdzam Rezerwację';
             }
-        });
-
-        // Zamykanie modali po kliknięciu tła
-        window.onclick = function(event) {
-            const resModal = document.getElementById('resModal');
-            const infoModal = document.getElementById('infoModal');
-            if (event.target === resModal) closeModal();
-            if (event.target === infoModal) closeInfoModal();
         };
 
-        // Inicjalizacja przy ładowaniu strony
-        window.addEventListener('DOMContentLoaded', init);
+        document.getElementById('search').addEventListener('input', handleFilter);
+        document.getElementById('platformFilter').addEventListener('change', handleFilter);
+        document.getElementById('sortOrder').addEventListener('change', handleFilter);
+        init();
+
+        // TOP 100
+        async function loadTop100() {
+            try {
+                const res  = await fetch(TOP100_URL + '?action=top100');
+                const data = await res.json();
+                const top100 = data.top100 || [];
+                document.getElementById('top100-loading').style.display = 'none';
+                const container = document.getElementById('top100-scroll');
+                if (top100.length === 0) {
+                    container.innerHTML = '<p class="text-zinc-600 text-xs uppercase tracking-widest py-4">Brak danych rankingu.</p>';
+                    return;
+                }
+                container.innerHTML = top100.map((item, idx) => {
+                    const pos    = idx + 1;
+                    const medal  = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : '';
+                    const numCls = pos <= 3 ? 'text-red-500' : pos <= 10 ? 'text-zinc-300' : 'text-zinc-600';
+                    return `<div class="flex-shrink-0 glass rounded-2xl p-3 flex flex-col items-center gap-1 cursor-default" style="scroll-snap-align:start;width:110px;min-width:110px;"><div class="w-full h-20 rounded-xl overflow-hidden bg-zinc-900 mb-1 relative">${item.image ? `<img src="${item.image}" class="w-full h-full object-cover">` : '<div class="w-full h-full flex items-center justify-center text-zinc-700 text-xs">?</div>'}<div class="absolute top-1 left-1 bg-black/70 backdrop-blur-sm px-1.5 py-px rounded-md"><span class="font-black text-[10px] ${numCls}">${medal || '#' + pos}</span></div></div><span class="text-white font-black text-[10px] uppercase italic tracking-tighter leading-tight text-center break-words w-full text-gradient drop-shadow-[0_0_8px_rgba(0,242,255,0.4)]">${item.title}</span></div>`;
+                }).join('');
+            } catch (e) {
+                document.getElementById('top100-loading').innerHTML = 'Nie udało się załadować rankingu.';
+            }
+        }
+        loadTop100();
     </script>
 </body>
 </html>
